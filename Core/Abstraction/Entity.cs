@@ -53,13 +53,38 @@ namespace Live2k.Core.Abstraction
             get
             {
                 var prop = GetProperty(propertyTitle);
-                return prop.GetValue();
+                return prop?.GetValue();
             }
+
             set
             {
-                var prop = GetProperty(propertyTitle);
+                var prop = GetProperty(propertyTitle) ?? throw new IndexOutOfRangeException($"No property is defined as {propertyTitle}");
                 prop.SetValue(value);
             }
+        }
+
+        /// <summary>
+        /// Get value of a property as expected type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="propertyTitle"></param>
+        /// <returns></returns>
+        protected virtual T GetPropertyValue<T>(string propertyTitle)
+        {
+            var value = this[propertyTitle];
+            return value == null ? default(T) : (T)value;
+        }
+
+        /// <summary>
+        /// Get value of a list property
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="propertyTitle"></param>
+        /// <returns></returns>
+        protected virtual ICollection<T> GetListPropertyValue<T>(string propertyTitle)
+        {
+            var value = this[propertyTitle] ?? new List<T>();
+            return value as ICollection<T>;
         }
 
         /// <summary>
@@ -69,8 +94,7 @@ namespace Live2k.Core.Abstraction
         /// <returns></returns>
         private BaseProperty GetProperty(string propertyTitle)
         {
-            var prop = Properties.FirstOrDefault(a => a.Title.Equals(propertyTitle, StringComparison.CurrentCultureIgnoreCase)) ??
-                throw new IndexOutOfRangeException($"No property is defined as {propertyTitle} on {this}");
+            var prop = Properties.FirstOrDefault(a => a.Title.Equals(propertyTitle, StringComparison.CurrentCultureIgnoreCase));
 
             return prop;
         }
@@ -118,6 +142,55 @@ namespace Live2k.Core.Abstraction
             // Instanciate property
             var prop = BaseProperty.InstanciateNew(title, description, valueType);
             AddProperty(prop);
+        }
+
+        /// <summary>
+        /// Add a member to a list property
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="listPropTitle"></param>
+        /// <param name="tag"></param>
+        /// <param name="value"></param>
+        public virtual void AddToListProperty<T>(string listPropTitle, string tag, T value) where T: Entity
+        {
+            if (string.IsNullOrWhiteSpace(listPropTitle))
+            {
+                throw new ArgumentException($"'{nameof(listPropTitle)}' cannot be null or whitespace", nameof(listPropTitle));
+            }
+
+            if (string.IsNullOrEmpty(tag))
+            {
+                throw new ArgumentException($"'{nameof(tag)}' cannot be null or empty", nameof(tag));
+            }
+
+            // Check if value has the tag or assign it
+            if (!value.Tags.Contains(tag))
+                value.Tags.Add(tag);
+
+            // Get the list property
+            var prop = (ICollection<T>)this[listPropTitle] ?? new List<T>();
+
+            // find a value with same tag
+            var val = GetFromListProperty<T>(listPropTitle, tag);
+
+            if (val == null)
+                prop.Add(value);
+            else
+                val = value;
+
+            this[listPropTitle] = prop;
+        }
+
+        /// <summary>
+        /// Get a value from a list property
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="listPropTitle"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public virtual T GetFromListProperty<T>(string listPropTitle, string tag) where T: Entity
+        {
+            return ((ICollection<T>)this[listPropTitle] ?? new List<T>()).FirstOrDefault(a => a.Tags.Contains(tag));
         }
 
         public IEnumerable<ValidationResult> Validate()

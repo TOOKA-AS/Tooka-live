@@ -1,4 +1,6 @@
 ﻿using System;
+using Newtonsoft.Json;
+
 namespace Live2k.Core.Basic.Commodities
 {
     public class Address : Location
@@ -8,7 +10,7 @@ namespace Live2k.Core.Basic.Commodities
             AddProperty(nameof(Provience), "Provience", typeof(string));
             AddProperty(nameof(City), "City", typeof(string));
             AddProperty(nameof(Street), "Street", typeof(string));
-            AddProperty(nameof(PostalCode), "Postal code", typeof(string));
+            AddProperty("Postal code", "Postal code", typeof(string));
         }
 
         public Address(string provience, string city, string street, string postalCode) : this("Address")
@@ -20,6 +22,7 @@ namespace Live2k.Core.Basic.Commodities
             PostalCode = postalCode;
         }
 
+        [JsonIgnore]
         public string Provience
         {
             get
@@ -33,6 +36,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
+        [JsonIgnore]
         public string City
         {
             get
@@ -46,6 +50,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
+        [JsonIgnore]
         public string Street
         {
             get
@@ -59,6 +64,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
+        [JsonIgnore]
         public string PostalCode
         {
             get

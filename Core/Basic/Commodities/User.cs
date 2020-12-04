@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Newtonsoft.Json;
+
 namespace Live2k.Core.Basic.Commodities
 {
     public class User : Commodity
@@ -9,6 +14,8 @@ namespace Live2k.Core.Basic.Commodities
             AddProperty("Middle name", $"Middle name of the {nameof(User)}", typeof(string));
             AddProperty("Last name", $"Last name of the {nameof(User)}", typeof(string));
             AddProperty("Birthday", $"Birthday of the {nameof(User)}", typeof(DateTime));
+            AddProperty("Phone numbers", "List of phone numbers", typeof(List<Phone>));
+            AddProperty("Addresses", "List of addresses", typeof(List<Address>));
         }
 
         protected User(string label, string description) : this()
@@ -34,6 +41,7 @@ namespace Live2k.Core.Basic.Commodities
             LastName = lastName;
         }
 
+        [JsonIgnore]
         public string FirstName
         {
             get
@@ -47,6 +55,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
+        [JsonIgnore]
         public string MiddleName
         {
             get
@@ -60,6 +69,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
+        [JsonIgnore]
         public string LastName
         {
             get
@@ -73,16 +83,87 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
+        [JsonIgnore]
         public DateTime Birthday
         {
             get
             {
-                return (DateTime)this["Birthday"];
+                return GetPropertyValue<DateTime>("Birthday");
             }
 
             set
             {
                 this["Birthday"] = value;
+            }
+        }
+
+        [JsonIgnore]
+        public string EmailAddress
+        {
+            get
+            {
+                return GetPropertyValue<string>("Email address");
+            }
+
+            set
+            {
+                this["Email address"] = value;
+            }
+        }
+
+        [JsonIgnore]
+        public IReadOnlyCollection<Phone> PhoneNumbers
+        {
+            get
+            {
+                return new ReadOnlyCollection<Phone>(GetListPropertyValue<Phone>("Phone numbers").ToList());
+            }
+
+            set
+            {
+                this["Phone numbers"] = value;
+            }
+        }
+
+        [JsonIgnore]
+        public IReadOnlyCollection<Address> Addresses
+        {
+            get
+            {
+                return new ReadOnlyCollection<Address>(GetListPropertyValue<Address>("Addresses").ToList());
+            }
+
+            set
+            {
+                this["Addresses"] = value;
+            }
+        }
+
+        [JsonIgnore]
+        public Address HomeAddress
+        {
+            get
+            {
+                return GetFromListProperty<Address>("Addresses", "Home address");
+            }
+
+            set
+            {
+                AddToListProperty("Addresses", "Home address", value);
+            }
+        }
+
+        [JsonIgnore]
+        public Address ShippingAddress
+        {
+            get
+            {
+                return GetFromListProperty<Address>("Addresses", "Shipping address");
+            }
+
+            set
+            {
+                AddToListProperty("Addresses", "Shipping address", value);
             }
         }
     }
