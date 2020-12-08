@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Live2k.Core.Interfaces;
@@ -92,10 +93,16 @@ namespace Live2k.Core.Abstraction
         /// <typeparam name="T"></typeparam>
         /// <param name="propertyTitle"></param>
         /// <returns></returns>
-        protected virtual ICollection<T> GetListPropertyValue<T>(string propertyTitle)
+        protected virtual IEnumerable<T> GetListPropertyValue<T>(string propertyTitle)
         {
-            var value = this[propertyTitle] ?? new List<T>();
-            return value as ICollection<T>;
+            var value = this[propertyTitle];
+            if (value == null) return null;
+
+            // check type of value
+            if (!value.GetType().GetGenericArguments()?.FirstOrDefault()?.Equals(typeof(T)) ?? false)
+                throw new InvalidOperationException($"Corrupted type of property, {propertyTitle} on {this}");
+
+            return value as IEnumerable<T>;
         }
 
         /// <summary>
@@ -138,7 +145,33 @@ namespace Live2k.Core.Abstraction
         public virtual void AddProperty(string title, string description, object value)
         {
             // Instanciate property
-            var prop = BaseProperty.InstanciateNew(title, description, value);
+            var prop = BaseProperty.InstanciateNewProperty(title, description, value);
+            AddProperty(prop);
+        }
+
+        /// <summary>
+        /// Adds a new list propery to the current entity
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="description"></param>
+        /// <param name="valueType"></param>
+        public virtual void AddListProperty(string title, string description, Type valueType)
+        {
+            // Instanciate property
+            var prop = BaseProperty.InstanciateNewListProperty(title, description, valueType);
+            AddProperty(prop);
+        }
+
+        /// <summary>
+        /// Adds a new list property to the current entity
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="description"></param>
+        /// <param name="value"></param>
+        public virtual void AddListProperty(string title, string description, ICollection value)
+        {
+            // Instanciate property
+            var prop = BaseProperty.InstanciateNewListProperty(title, description, value);
             AddProperty(prop);
         }
 
@@ -151,7 +184,7 @@ namespace Live2k.Core.Abstraction
         public virtual void AddProperty(string title, string description, Type valueType)
         {
             // Instanciate property
-            var prop = BaseProperty.InstanciateNew(title, description, valueType);
+            var prop = BaseProperty.InstanciateNewProperty(title, description, valueType);
             AddProperty(prop);
         }
 
@@ -185,9 +218,14 @@ namespace Live2k.Core.Abstraction
             var val = GetFromListProperty<T>(listPropTitle, tag);
 
             if (val == null)
+            {
                 prop.Add(value);
+            }
             else
-                val = value;
+            {
+                prop.Remove(val);
+                prop.Add(value);
+            }
 
             this[listPropTitle] = prop;
         }

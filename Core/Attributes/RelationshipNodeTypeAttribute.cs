@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Live2k.Core.Attributes
 {
-    public enum RelationshipNodeEnum { Node1, Node2 }
+    public enum RelationshipNodeEnum { Origin, Target }
 
     [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
     public class RelationshipNodeTypeAttribute : Attribute

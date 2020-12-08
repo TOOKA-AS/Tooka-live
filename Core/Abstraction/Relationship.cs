@@ -7,17 +7,23 @@ namespace Live2k.Core.Abstraction
     /// </summary>
     public abstract class Relationship : Entity
     {
-        protected readonly Node _node1;
-        protected readonly Node _node2;
-
-        public Relationship(Node node1, Node node2)
+        protected Relationship() : base()
         {
-            this._node1 = node1 ?? throw new ArgumentNullException(nameof(node1));
-            this._node2 = node2 ?? throw new ArgumentNullException(nameof(node2));
+
         }
 
-        public abstract bool IsDirectional();
-        public abstract Node GetOwnerNode();
-        public abstract Node GetChildNode();
+        protected Relationship(string label, string description) : base(label, description)
+        {
+
+        }
+
+        protected Relationship(string label, string description, Node origin, Node target) : this(label, description)
+        {
+            Origin = origin ?? throw new ArgumentNullException(nameof(origin));
+            Target = target ?? throw new ArgumentNullException(nameof(target));
+        }
+
+        public virtual Node Origin { get; set; }
+        public virtual Node Target { get; set; }
     }
 }

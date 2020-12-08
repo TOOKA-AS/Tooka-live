@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Live2k.Core.Abstraction
 {
@@ -21,26 +24,63 @@ namespace Live2k.Core.Abstraction
         protected override void InitializeListObjects()
         {
             base.InitializeListObjects();
-            ChildRelationships = new List<Relationship>();
-            ParentRelationships = new List<Relationship>();
-            NeutralRelationships = new List<Relationship>();
+            Relationships = new List<RelationshipFootPrint>();
         }
 
         /// <summary>
-        /// Relationships targeting to child nodes
+        /// Relationships owned by current Node (current node as the origin)
         /// </summary>
-        public ICollection<Relationship> ChildRelationships { get; set; }
+        public IReadOnlyCollection<RelationshipFootPrint> Relationships { get; set; }
 
         /// <summary>
-        /// Relationships targeting to parent nodes
+        /// Add new relationships
         /// </summary>
-        public ICollection<Relationship> ParentRelationships { get; set; }
+        /// <param name="relationships"></param>
+        public virtual void AddRelationship(params Relationship[] relationships)
+        {
+            if (relationships is null)
+            {
+                throw new ArgumentNullException(nameof(relationships));
+            }
+
+            var temp = new List<RelationshipFootPrint>(Relationships);
+            temp.AddRange(relationships.Select(a=>new RelationshipFootPrint(a)));
+            Relationships = new ReadOnlyCollection<RelationshipFootPrint>(temp);
+        }
 
         /// <summary>
-        /// Relationships of type neutral
+        /// Remove relationship on the index
         /// </summary>
-        public ICollection<Relationship> NeutralRelationships { get; set; }
+        /// <param name="index"></param>
+        public virtual void RemoveRelationship(int index)
+        {
+            var temp = new List<RelationshipFootPrint>(Relationships);
+            temp.Remove(Relationships.ElementAt(index));
+            Relationships = new ReadOnlyCollection<RelationshipFootPrint>(temp);
+        }
 
+        /// <summary>
+        /// Remove relationships
+        /// </summary>
+        /// <param name="relationships"></param>
+        public virtual void RemoveRelationship(params RelationshipFootPrint[] relationships)
+        {
+            var temp = new List<RelationshipFootPrint>(Relationships.Except(relationships));
+            Relationships = new ReadOnlyCollection<RelationshipFootPrint>(temp);
+        }
 
+        /// <summary>
+        /// Remove relationships
+        /// </summary>
+        /// <param name="relationships"></param>
+        public virtual void RemoveRelationship(params Relationship[] relationships)
+        {
+            var temp = new List<RelationshipFootPrint>(Relationships);
+            foreach (var item in relationships)
+            {
+                temp.Remove(new RelationshipFootPrint(item));
+            }
+            Relationships = new ReadOnlyCollection<RelationshipFootPrint>(temp);
+        }
     }
 }

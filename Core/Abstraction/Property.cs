@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 
 namespace Live2k.Core.Abstraction
@@ -31,10 +32,19 @@ namespace Live2k.Core.Abstraction
                 return;
 
             var type = value.GetType();
-            if (!type.Equals(typeof(T)) && !type.GetNestedTypes().Contains(typeof(T)))
+            if (!ValidateType(type))
                 throw new FormatException($"Cannot assign value of type {value.GetType()} to proprty of type {typeof(T)}");
 
             Value = (T)value;
+        }
+
+        private bool ValidateType(Type type)
+        {
+            if (type.Equals(typeof(T))) return true;
+
+            if (type.GetNestedTypes().Contains(typeof(T))) return true;
+
+            return false;
         }
     }
 }

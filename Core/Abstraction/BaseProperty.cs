@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Linq;
+
 namespace Live2k.Core.Abstraction
 {
     /// <summary>
@@ -26,20 +29,39 @@ namespace Live2k.Core.Abstraction
         /// <param name="description"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal static BaseProperty InstanciateNew(string title, string description, object value)
+        internal static BaseProperty InstanciateNewProperty(string title, string description, object value)
         {
             // value type
             var valueType = value.GetType();
 
-            var prop = InstanciateNew(title, description, valueType);
+            var prop = InstanciateNewProperty(title, description, valueType);
             prop.SetValue(value);
             return prop;
         }
 
-        internal static BaseProperty InstanciateNew(string title, string description, Type valueType)
+        internal static BaseProperty InstanciateNewProperty(string title, string description, Type valueType)
         {
             // Get property type
             var propType = typeof(Property<>).MakeGenericType(valueType);
+
+            return Activator.CreateInstance(propType, title, description, null) as BaseProperty;
+        }
+
+        internal static BaseProperty InstanciateNewListProperty(string title, string description, IEnumerable value)
+        {
+            // value type
+            var valueType = value.GetType().GetGenericArguments()?.FirstOrDefault() ??
+                throw new InvalidOperationException($"Cannot make a list property of type {value.GetType()}");
+
+            var prop = InstanciateNewListProperty(title, description, valueType);
+            prop.SetValue(value);
+            return prop;
+        }
+
+        internal static BaseProperty InstanciateNewListProperty(string title, string description, Type valueType)
+        {
+            // Get property type
+            var propType = typeof(ListProperty<>).MakeGenericType(valueType);
 
             return Activator.CreateInstance(propType, title, description, null) as BaseProperty;
         }

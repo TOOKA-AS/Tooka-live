@@ -19,8 +19,8 @@ namespace Live2k.Core.Basic.Commodities
             AddProperty("Middle name", $"Middle name of the {nameof(User)}", typeof(string));
             AddProperty("Last name", $"Last name of the {nameof(User)}", typeof(string));
             AddProperty("Birthday", $"Birthday of the {nameof(User)}", typeof(DateTime));
-            AddProperty("Phone numbers", "List of phone numbers", typeof(List<Phone>));
-            AddProperty("Addresses", "List of addresses", typeof(List<Address>));
+            AddListProperty("Phone numbers", "List of phone numbers", typeof(Phone));
+            AddListProperty("Addresses", "List of addresses", typeof(Address));
         }
 
         public User(string firstName, string middleName, string lastName) : this(nameof(User), "User object")
@@ -115,7 +115,7 @@ namespace Live2k.Core.Basic.Commodities
         {
             get
             {
-                return new ReadOnlyCollection<Phone>(GetListPropertyValue<Phone>("Phone numbers").ToList());
+                return new ReadOnlyCollection<Phone>(GetListPropertyValue<Phone>("Phone numbers")?.ToList() ?? new List<Phone>());
             }
 
             set
@@ -129,7 +129,7 @@ namespace Live2k.Core.Basic.Commodities
         {
             get
             {
-                return new ReadOnlyCollection<Address>(GetListPropertyValue<Address>("Addresses").ToList());
+                return new ReadOnlyCollection<Address>(GetListPropertyValue<Address>("Addresses")?.ToList() ?? new List<Address>());
             }
 
             set

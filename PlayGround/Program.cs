@@ -10,22 +10,33 @@ namespace PlayGround
     {
         static void Main(string[] args)
         {
-            var co = new ControlObject("=1234/1234", "111", "BC110", "111-10-0001", "A2");
+            Test1();
 
-            // Make and owning relation
-            var rel = new ParentRelationship(GetUser(), co);
+            // make an SDI
+            var sdi = new SDI("Test SDI", 1234, "220");
 
+            // revise SDI
+            var revision = sdi.Revise<SdiRevision>("Test revision", 12);
+            var y = sdi["Revisions"];
+            var x = sdi.Revisions;
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.TypeNameHandling = TypeNameHandling.Auto;
+            using (var writer = new StreamWriter("TestSDI.json"))
+            {
+                serializer.Serialize(writer, sdi);
+            }
         }
 
         static void Test1()
         {
-            Deserialize();
+            //Deserialize();
 
             var user = new User("Faramarz", null, "Bodaghi");
 
-            var y = user.PhoneNumbers;
+            
             user.AddToListProperty("Phone numbers", "Mobile", new Phone("98100918", "Mobile"));
-
+            var y = user.PhoneNumbers;
             var x = user.Birthday;
 
 
