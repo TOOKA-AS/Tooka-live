@@ -10,6 +10,17 @@ namespace Live2k.Core.Abstraction
     {
         protected Node() : base()
         {
+
+        }
+
+        protected Node(string label, string description) : base(label, description)
+        {
+
+        }
+
+        protected override void InitializeListObjects()
+        {
+            base.InitializeListObjects();
             ChildRelationships = new List<Relationship>();
             ParentRelationships = new List<Relationship>();
             NeutralRelationships = new List<Relationship>();

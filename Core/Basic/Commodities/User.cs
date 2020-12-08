@@ -10,18 +10,17 @@ namespace Live2k.Core.Basic.Commodities
     {
         private User() : base()
         {
+            
+        }
+
+        protected User(string label, string description) : base(label, description)
+        {
             AddProperty("First name", $"First name of the {nameof(User)}", typeof(string));
             AddProperty("Middle name", $"Middle name of the {nameof(User)}", typeof(string));
             AddProperty("Last name", $"Last name of the {nameof(User)}", typeof(string));
             AddProperty("Birthday", $"Birthday of the {nameof(User)}", typeof(DateTime));
             AddProperty("Phone numbers", "List of phone numbers", typeof(List<Phone>));
             AddProperty("Addresses", "List of addresses", typeof(List<Address>));
-        }
-
-        protected User(string label, string description) : this()
-        {
-            Label = label;
-            Description = description;
         }
 
         public User(string firstName, string middleName, string lastName) : this(nameof(User), "User object")

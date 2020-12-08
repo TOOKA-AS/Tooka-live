@@ -3,21 +3,20 @@ namespace Live2k.Core.Basic.Commodities
 {
     public class EmailAddress : Commodity
     {
-        public EmailAddress()
+        protected EmailAddress() : base()
         {
-            Label = nameof(EmailAddress);
-            AddProperty("Address", "Email address", typeof(string));
+            
         }
 
-        public EmailAddress(string address, string description)
+        public EmailAddress(string address, string description) : base(nameof(EmailAddress), description)
         {
             if (string.IsNullOrWhiteSpace(address))
             {
                 throw new ArgumentException($"'{nameof(address)}' cannot be null or whitespace", nameof(address));
             }
 
+            AddProperty("Address", "Email address", typeof(string));
             Address = address;
-            Description = description;
         }
 
         public string Address

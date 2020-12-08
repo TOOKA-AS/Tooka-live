@@ -13,5 +13,10 @@ namespace Live2k.Core.Basic
         {
 
         }
+
+        protected Commodity(string label, string description) : base(label, description)
+        {
+
+        }
     }
 }

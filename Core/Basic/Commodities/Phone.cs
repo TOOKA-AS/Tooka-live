@@ -5,21 +5,20 @@ namespace Live2k.Core.Basic.Commodities
 {
     public class Phone : Commodity
     {
-        public Phone()
+        private Phone() : base()
         {
-            Label = nameof(Phone);
-            AddProperty("Phone number", "Phone number", typeof(string));
+            
         }
 
-        public Phone(string number, string description) : this()
+        public Phone(string number, string description) : base(nameof(Phone), description)
         {
             if (string.IsNullOrWhiteSpace(number))
             {
                 throw new ArgumentException($"'{nameof(number)}' cannot be null or whitespace", nameof(number));
             }
 
+            AddProperty("Phone number", "Phone number", typeof(string));
             PhoneNumber = number;
-            Description = description;
         }
 
         [JsonIgnore]

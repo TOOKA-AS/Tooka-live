@@ -1,20 +1,29 @@
 ﻿using System;
+using Newtonsoft.Json;
+
 namespace Live2k.Core.Basic.Commodities
 {
     public class Location : Commodity
     {
-        private Location() : base()
+        protected Location() : base()
         {
-            this.Label = "Location";
+
+        }
+
+        protected Location(string label, string description, double latitude, double langtitude) : base(label, description)
+        {
             AddProperty(nameof(Latitude), "Latitude of location", typeof(double));
             AddProperty(nameof(Langtitude), "Latitude of location", typeof(double));
+            Latitude = latitude;
+            Langtitude = langtitude;
         }
 
-        public Location(string description) : this()
+        public Location(string description, double latitude, double langtitude) : this(nameof(Location), description, latitude, langtitude)
         {
-            this.Description = description;
+            
         }
 
+        [JsonIgnore]
         public double Latitude
         {
             get
@@ -28,6 +37,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
+        [JsonIgnore]
         public double Langtitude
         {
             get

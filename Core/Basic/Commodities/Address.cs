@@ -5,17 +5,23 @@ namespace Live2k.Core.Basic.Commodities
 {
     public class Address : Location
     {
-        private Address(string description) : base(description)
+        protected Address() : base()
+        {
+
+        }
+
+        protected Address(string description, double latitude, double langtitude) : base(nameof(Address), description, latitude, langtitude)
+        {
+
+        }
+
+        public Address(string description, string provience, string city, string street, string postalCode, double latitude = double.NaN, double langtitude = double.NaN)
+            : this(description, latitude, langtitude)
         {
             AddProperty(nameof(Provience), "Provience", typeof(string));
             AddProperty(nameof(City), "City", typeof(string));
             AddProperty(nameof(Street), "Street", typeof(string));
             AddProperty("Postal code", "Postal code", typeof(string));
-        }
-
-        public Address(string provience, string city, string street, string postalCode) : this("Address")
-        {
-            Label = nameof(Address);
             Provience = provience;
             City = city;
             Street = street;

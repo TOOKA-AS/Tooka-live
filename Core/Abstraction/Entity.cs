@@ -13,6 +13,17 @@ namespace Live2k.Core.Abstraction
     {
         protected Entity()
         {
+            InitializeListObjects();
+        }
+
+        protected Entity(string label, string description) : this()
+        {
+            Label = label;
+            Description = description;
+        }
+
+        protected virtual void InitializeListObjects()
+        {
             Tags = new List<string>();
             Properties = new List<BaseProperty>();
         }
