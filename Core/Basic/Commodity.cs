@@ -1,5 +1,6 @@
 ﻿using System;
 using Live2k.Core.Abstraction;
+using Newtonsoft.Json;
 
 namespace Live2k.Core.Basic
 {
@@ -9,12 +10,25 @@ namespace Live2k.Core.Basic
     /// </summary>
     public class Commodity : Node
     {
-        protected Commodity() : base()
+        /// <summary>
+        /// Constructor to be used by JSON/BSON deserializer
+        /// </summary>
+        /// <param name="temp"></param>
+        [JsonConstructor]
+        protected Commodity(object temp) : base(temp)
         {
 
         }
 
-        protected Commodity(string label, string description) : base(label, description)
+        /// <summary>
+        /// Default constructor to be used to initialize object
+        /// </summary>
+        public Commodity() : base(nameof(Commodity))
+        {
+
+        }
+
+        protected Commodity(string label) : base(label)
         {
 
         }

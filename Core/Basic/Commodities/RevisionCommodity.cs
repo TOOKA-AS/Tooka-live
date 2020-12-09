@@ -5,23 +5,32 @@ namespace Live2k.Core.Basic.Commodities
 {
     public class RevisionCommodity : Commodity
     {
-        protected RevisionCommodity() : base()
+        /// <summary>
+        /// Constructor to be used by JSON/BSON deserializer
+        /// </summary>
+        /// <param name="temp"></param>
+        [JsonConstructor]
+        protected RevisionCommodity(object temp) : base(temp)
+        {
+
+        }
+
+        /// <summary>
+        /// Default constructor to be used to initialize object
+        /// </summary>
+        public RevisionCommodity() : base(nameof(RevisionCommodity))
         {
         }
 
-        protected RevisionCommodity(string label, string description) : base(label, description)
+        protected RevisionCommodity(string label) : base(label)
         {
+            
+        }
+
+        protected override void AddProperties()
+        {
+            base.AddProperties();
             AddProperty(nameof(RevisionNumber), "Revision number", typeof(int));
-        }
-
-        public RevisionCommodity(RevisableCommodity owner) : this(nameof(RevisableCommodity), $"Revision nr. {owner.RevisionsCount + 1} for {owner}")
-        {
-            if (owner is null)
-            {
-                throw new ArgumentNullException(nameof(owner));
-            }
-
-            RevisionNumber = owner.RevisionsCount + 1;
         }
 
         [JsonIgnore]

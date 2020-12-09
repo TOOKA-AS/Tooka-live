@@ -5,20 +5,33 @@ namespace Live2k.Core.Basic.Commodities
 {
     public class Phone : Commodity
     {
-        private Phone() : base()
+        /// <summary>
+        /// Constructor to be used by JSON/BSON deserializer
+        /// </summary>
+        /// <param name="temp"></param>
+        [JsonConstructor]
+        protected Phone(object temp) : base(temp)
+        {
+
+        }
+
+        /// <summary>
+        /// Default constructor to be used to initialize object
+        /// </summary>
+        public Phone() : base(nameof(Phone))
         {
             
         }
 
-        public Phone(string number, string description) : base(nameof(Phone), description)
+        protected Phone(string label) : base(label)
         {
-            if (string.IsNullOrWhiteSpace(number))
-            {
-                throw new ArgumentException($"'{nameof(number)}' cannot be null or whitespace", nameof(number));
-            }
 
+        }
+
+        protected override void AddProperties()
+        {
+            base.AddProperties();
             AddProperty("Phone number", "Phone number", typeof(string));
-            PhoneNumber = number;
         }
 
         [JsonIgnore]

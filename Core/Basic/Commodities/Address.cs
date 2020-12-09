@@ -5,27 +5,36 @@ namespace Live2k.Core.Basic.Commodities
 {
     public class Address : Location
     {
-        protected Address() : base()
+        /// <summary>
+        /// Constructor to be used by JSON/BSON deserializer
+        /// </summary>
+        /// <param name="temp"></param>
+        [JsonConstructor]
+        protected Address(object temp) : base(temp)
         {
 
         }
 
-        protected Address(string description, double latitude, double langtitude) : base(nameof(Address), description, latitude, langtitude)
+        /// <summary>
+        /// Default constructor to be used to initialize object
+        /// </summary>
+        public Address() : base(nameof(Address))
         {
 
         }
 
-        public Address(string description, string provience, string city, string street, string postalCode, double latitude = double.NaN, double langtitude = double.NaN)
-            : this(description, latitude, langtitude)
+        protected Address(string label) : base(label)
         {
+
+        }
+
+        protected override void AddProperties()
+        {
+            base.AddProperties();
             AddProperty(nameof(Provience), "Provience", typeof(string));
             AddProperty(nameof(City), "City", typeof(string));
             AddProperty(nameof(Street), "Street", typeof(string));
             AddProperty("Postal code", "Postal code", typeof(string));
-            Provience = provience;
-            City = city;
-            Street = street;
-            PostalCode = postalCode;
         }
 
         [JsonIgnore]

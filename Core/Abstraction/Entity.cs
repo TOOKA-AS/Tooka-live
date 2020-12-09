@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Live2k.Core.Interfaces;
 using Live2k.Core.Validation;
+using Newtonsoft.Json;
 
 namespace Live2k.Core.Abstraction
 {
@@ -12,21 +13,49 @@ namespace Live2k.Core.Abstraction
     /// </summary>
     public abstract class Entity : IValidatableObject
     {
-        protected Entity()
+        /// <summary>
+        /// Constructor to be used by JSON/BSON deserializer
+        /// </summary>
+        /// <param name="temp"></param>
+        [JsonConstructor]
+        protected Entity(object temp)
+        {
+
+        }
+
+        /// <summary>
+        /// Constructor which initializes list objects and adds properties
+        /// </summary>
+        private Entity()
         {
             InitializeListObjects();
+            AddProperties();
         }
 
-        protected Entity(string label, string description) : this()
+        /// <summary>
+        /// Default constructor to be used to initialize objecr
+        /// </summary>
+        /// <param name="label"></param>
+        protected Entity(string label) : this()
         {
             Label = label;
-            Description = description;
         }
 
+        /// <summary>
+        /// Virtual method to initialize list objects
+        /// </summary>
         protected virtual void InitializeListObjects()
         {
             Tags = new List<string>();
             Properties = new List<BaseProperty>();
+        }
+
+        /// <summary>
+        /// Virtual method to add properties
+        /// </summary>
+        protected virtual void AddProperties()
+        {
+
         }
 
         /// <summary>
@@ -40,7 +69,7 @@ namespace Live2k.Core.Abstraction
         public string Label { get; set; }
 
         /// <summary>
-        /// Description of the current entity
+        /// Description of the current instance
         /// </summary>
         public string Description { get; set; }
 
@@ -142,7 +171,7 @@ namespace Live2k.Core.Abstraction
         /// <param name="title"></param>
         /// <param name="description"></param>
         /// <param name="value"></param>
-        public virtual void AddProperty(string title, string description, object value)
+        protected virtual void AddProperty(string title, string description, object value)
         {
             // Instanciate property
             var prop = BaseProperty.InstanciateNewProperty(title, description, value);
@@ -155,7 +184,7 @@ namespace Live2k.Core.Abstraction
         /// <param name="title"></param>
         /// <param name="description"></param>
         /// <param name="valueType"></param>
-        public virtual void AddListProperty(string title, string description, Type valueType)
+        protected virtual void AddListProperty(string title, string description, Type valueType)
         {
             // Instanciate property
             var prop = BaseProperty.InstanciateNewListProperty(title, description, valueType);
@@ -168,7 +197,7 @@ namespace Live2k.Core.Abstraction
         /// <param name="title"></param>
         /// <param name="description"></param>
         /// <param name="value"></param>
-        public virtual void AddListProperty(string title, string description, ICollection value)
+        protected virtual void AddListProperty(string title, string description, ICollection value)
         {
             // Instanciate property
             var prop = BaseProperty.InstanciateNewListProperty(title, description, value);
@@ -181,7 +210,7 @@ namespace Live2k.Core.Abstraction
         /// <param name="title"></param>
         /// <param name="description"></param>
         /// <param name="valueType"></param>
-        public virtual void AddProperty(string title, string description, Type valueType)
+        protected virtual void AddProperty(string title, string description, Type valueType)
         {
             // Instanciate property
             var prop = BaseProperty.InstanciateNewProperty(title, description, valueType);
@@ -242,6 +271,10 @@ namespace Live2k.Core.Abstraction
             return ((ICollection<T>)this[listPropTitle] ?? new List<T>()).FirstOrDefault(a => a.Tags.Contains(tag));
         }
 
+        /// <summary>
+        /// Validation method
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<ValidationResult> Validate()
         {
             throw new NotImplementedException();

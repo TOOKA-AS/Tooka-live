@@ -4,21 +4,37 @@ using Newtonsoft.Json;
 
 namespace PlayGround
 {
-    public class SDI : RevisableCommodity
+    public sealed class SDI : RevisableCommodity
     {
-        private SDI() : base()
+        [JsonConstructor]
+        private SDI(object temp)
+        {
+
+        }
+
+        public SDI() : base(nameof(SDI))
         {
         }
 
-        private SDI(string label, string description) : base(label, description)
+        protected override void AddProperties()
         {
+            base.AddProperties();
+            AddProperty(nameof(DataCode), "DataCode", typeof(string));
             AddProperty(nameof(Section), "Section", typeof(string));
         }
 
-        public SDI(string description, int dataCode, string section) : this(nameof(SDI), description)
+        [JsonIgnore]
+        public string DataCode
         {
-            DataCode = dataCode;
-            Section = section;
+            get
+            {
+                return (string)this[nameof(DataCode)];
+            }
+
+            set
+            {
+                this[nameof(DataCode)] = value;
+            }
         }
 
         [JsonIgnore]

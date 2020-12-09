@@ -13,11 +13,11 @@ namespace Live2k.Core.Abstraction
         public RelationshipFootPrint(Relationship relationship) : this()
         {
             this._relationship = relationship ?? throw new ArgumentNullException(nameof(relationship));
-            Id = relationship.Id;
-            Label = relationship.Label;
+            Id = relationship.Id ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Id)} cannot be null");
+            Label = relationship.Label ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Label)} cannot be null");
             Description = relationship.Description;
-            TargetNodeId = relationship.Target.Id;
-            TargetNodeLabel = relationship.Target.Label;
+            TargetNodeId = relationship.Target.Id ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Target.Id)} cannot be null");
+            TargetNodeLabel = relationship.Target.Label ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Target.Label)} cannot be null");
             TargetNodeDescription = relationship.Target.Description;
         }
 

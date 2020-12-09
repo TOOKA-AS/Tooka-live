@@ -1,16 +1,30 @@
 ﻿using System;
 using Live2k.Core.Abstraction;
+using Newtonsoft.Json;
 
 namespace Live2k.Core.Basic.Relationships
 {
     public class DependencyRelationship : Relationship
     {
-        protected DependencyRelationship() : base()
+        /// <summary>
+        /// Constructor to be used by JSON/BSON deserializer
+        /// </summary>
+        /// <param name="temp"></param>
+        [JsonConstructor]
+        protected DependencyRelationship(object temp) : base(temp)
         {
 
         }
 
-        public DependencyRelationship(string description, Node origin, Node target) : base("Dependency relationship", description, origin, target)
+        /// <summary>
+        /// Default constructor to be used to initialize object
+        /// </summary>
+        public DependencyRelationship() : base(nameof(DependencyRelationship))
+        {
+
+        }
+
+        protected DependencyRelationship(string label) : base(label)
         {
 
         }

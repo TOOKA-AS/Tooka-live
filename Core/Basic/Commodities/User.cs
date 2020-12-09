@@ -8,12 +8,30 @@ namespace Live2k.Core.Basic.Commodities
 {
     public class User : Commodity
     {
-        private User() : base()
+        /// <summary>
+        /// Constructor to be used by JSON/BSON deserializer
+        /// </summary>
+        /// <param name="temp"></param>
+        [JsonConstructor]
+        protected User(object temp) : base(temp)
         {
-            
+
         }
 
-        protected User(string label, string description) : base(label, description)
+        /// <summary>
+        /// Default constructor to be used to initialize object
+        /// </summary>
+        public User() : base(nameof(User))
+        {
+
+        }
+
+        protected User(string label) : base(label)
+        {
+
+        }
+
+        protected override void AddProperties()
         {
             AddProperty("First name", $"First name of the {nameof(User)}", typeof(string));
             AddProperty("Middle name", $"Middle name of the {nameof(User)}", typeof(string));
@@ -21,23 +39,6 @@ namespace Live2k.Core.Basic.Commodities
             AddProperty("Birthday", $"Birthday of the {nameof(User)}", typeof(DateTime));
             AddListProperty("Phone numbers", "List of phone numbers", typeof(Phone));
             AddListProperty("Addresses", "List of addresses", typeof(Address));
-        }
-
-        public User(string firstName, string middleName, string lastName) : this(nameof(User), "User object")
-        {
-            if (string.IsNullOrWhiteSpace(firstName))
-            {
-                throw new ArgumentException($"'{nameof(firstName)}' cannot be null or whitespace", nameof(firstName));
-            }
-
-            if (string.IsNullOrWhiteSpace(lastName))
-            {
-                throw new ArgumentException($"'{nameof(lastName)}' cannot be null or whitespace", nameof(lastName));
-            }
-
-            FirstName = firstName;
-            MiddleName = middleName;
-            LastName = lastName;
         }
 
         [JsonIgnore]
@@ -163,6 +164,20 @@ namespace Live2k.Core.Basic.Commodities
             set
             {
                 AddToListProperty("Addresses", "Shipping address", value);
+            }
+        }
+
+        [JsonIgnore]
+        public Phone MobilePhone
+        {
+            get
+            {
+                return GetFromListProperty<Phone>("Phone numbers", "Mobile number");
+            }
+
+            set
+            {
+                AddToListProperty("Phone numbers", "Mobile number", value);
             }
         }
     }

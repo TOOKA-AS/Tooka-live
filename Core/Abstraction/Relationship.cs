@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Live2k.Core.Abstraction
 {
@@ -7,20 +8,27 @@ namespace Live2k.Core.Abstraction
     /// </summary>
     public abstract class Relationship : Entity
     {
-        protected Relationship() : base()
+        /// <summary>
+        /// Constructor to be used by JSON/BSON deserializer
+        /// </summary>
+        /// <param name="temp"></param>
+        [JsonConstructor]
+        protected Relationship(object temp) : base(temp)
         {
 
         }
 
-        protected Relationship(string label, string description) : base(label, description)
+        /// <summary>
+        /// Default constructor to be used to initialize object
+        /// </summary>
+        private Relationship() : base(nameof(Relationship))
         {
 
         }
 
-        protected Relationship(string label, string description, Node origin, Node target) : this(label, description)
+        protected Relationship(string label) : base(label)
         {
-            Origin = origin ?? throw new ArgumentNullException(nameof(origin));
-            Target = target ?? throw new ArgumentNullException(nameof(target));
+
         }
 
         public virtual Node Origin { get; set; }

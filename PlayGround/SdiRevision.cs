@@ -4,21 +4,17 @@ using Newtonsoft.Json;
 
 namespace PlayGround
 {
-    public class SdiRevision : RevisionCommodity
+    public sealed class SdiRevision : RevisionCommodity
     {
-        private SdiRevision() : base()
+        public SdiRevision() : base(nameof(SdiRevision))
         {
 
         }
 
-        private SdiRevision(string label, string description) : base(label, description)
+        protected override void AddProperties()
         {
+            base.AddProperties();
             AddProperty(nameof(NumberOfDocs), "Number of attached documents", typeof(int));
-        }
-
-        public SdiRevision(string description, int numberOfDocs) : this(nameof(SdiRevision), description)
-        {
-            NumberOfDocs = numberOfDocs;
         }
 
         [JsonIgnore]

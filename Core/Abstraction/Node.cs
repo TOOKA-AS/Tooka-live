@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace Live2k.Core.Abstraction
 {
@@ -11,12 +12,25 @@ namespace Live2k.Core.Abstraction
     /// </summary>
     public abstract class Node : Entity
     {
-        protected Node() : base()
+        /// <summary>
+        /// Constructor to be used by JSON/BSON deserializer
+        /// </summary>
+        /// <param name="temp"></param>
+        [JsonConstructor]
+        protected Node(object temp) : base(temp)
         {
 
         }
 
-        protected Node(string label, string description) : base(label, description)
+        /// <summary>
+        /// Default constructor to be used to initialize object
+        /// </summary>
+        private Node() : base(nameof(Node))
+        {
+
+        }
+
+        protected Node(string label) : base(label)
         {
 
         }

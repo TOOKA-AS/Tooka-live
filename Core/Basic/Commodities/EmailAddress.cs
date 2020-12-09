@@ -1,22 +1,37 @@
 ﻿using System;
+using Newtonsoft.Json;
+
 namespace Live2k.Core.Basic.Commodities
 {
     public class EmailAddress : Commodity
     {
-        protected EmailAddress() : base()
+        /// <summary>
+        /// Constructor to be used by JSON/BSON deserializer
+        /// </summary>
+        /// <param name="temp"></param>
+        [JsonConstructor]
+        protected EmailAddress(object temp) : base(temp)
+        {
+
+        }
+
+        /// <summary>
+        /// Default constructor to be used to initialize object
+        /// </summary>
+        public EmailAddress() : base(nameof(EmailAddress))
         {
             
         }
 
-        public EmailAddress(string address, string description) : base(nameof(EmailAddress), description)
+        protected EmailAddress(string label) : base(label)
         {
-            if (string.IsNullOrWhiteSpace(address))
-            {
-                throw new ArgumentException($"'{nameof(address)}' cannot be null or whitespace", nameof(address));
-            }
 
+        }
+
+        protected override void AddProperties()
+        {
+            base.AddProperties();
             AddProperty("Address", "Email address", typeof(string));
-            Address = address;
         }
 
         public string Address

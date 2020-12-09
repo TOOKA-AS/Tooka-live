@@ -13,10 +13,16 @@ namespace PlayGround
             Test1();
 
             // make an SDI
-            var sdi = new SDI("Test SDI", 1234, "220");
+            var sdi = new SDI();
+            sdi.DataCode = "SDI-111-11-01";
+            sdi.Section = "111";
+
+            var xx = sdi.Revisions;
 
             // revise SDI
-            var revision = sdi.Revise<SdiRevision>("Test revision", 12);
+            var revision = sdi.Revise<SdiRevision>();
+            revision.NumberOfDocs = 20;
+            revision.Tags.Add("ssss");
             var y = sdi["Revisions"];
             var x = sdi.Revisions;
 
@@ -30,20 +36,35 @@ namespace PlayGround
 
         static void Test1()
         {
-            //Deserialize();
+            Deserialize();
 
-            var user = new User("Faramarz", null, "Bodaghi");
+            var user = new User();
+            user.FirstName = "Faramarz";
+            user.LastName = "Bodaghi";
 
-            
-            user.AddToListProperty("Phone numbers", "Mobile", new Phone("98100918", "Mobile"));
-            var y = user.PhoneNumbers;
-            var x = user.Birthday;
+            var phone = new Phone();
+            phone.PhoneNumber = "98100918";
+            phone.Tags.Add("Mobile");
+            phone.Description = "Mobile";
+
+            user.MobilePhone = phone;
+
+            user.Birthday = new DateTime(1986, 9, 19);
 
 
-            user.AddToListProperty("Addresses", "Home address", new Address("", "Viken", "Høvik", "Kokkerudåsen", "1363"));
+            var address = new Address();
+            address.City = "Høvik";
+            address.Label = "Home address";
+            address.Langtitude = 122442;
+            address.Latitude = 33234;
+            address.PostalCode = "1365";
+            address.Provience = "Viken";
+            address.Street = "Kokkerudåsen 21";
+            address.Description = "Temporart home address";
+
+            user.AddToListProperty("Addresses", "Home address", address);
             var home = user.HomeAddress;
 
-            user.Birthday = DateTime.Now;
 
             JsonSerializer serializer = new JsonSerializer();
             serializer.TypeNameHandling = TypeNameHandling.Auto;
