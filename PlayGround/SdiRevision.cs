@@ -6,6 +6,12 @@ namespace PlayGround
 {
     public sealed class SdiRevision : RevisionCommodity
     {
+        [JsonConstructor]
+        private SdiRevision(object temp)
+        {
+
+        }
+
         public SdiRevision() : base(nameof(SdiRevision))
         {
 

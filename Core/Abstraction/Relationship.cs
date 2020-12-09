@@ -31,7 +31,16 @@ namespace Live2k.Core.Abstraction
 
         }
 
-        public virtual Node Origin { get; set; }
-        public virtual Node Target { get; set; }
+        public virtual void SetNodes(Node origin, Node target)
+        {
+            Origin = new NodeFootPrint(origin);
+            Target = new NodeFootPrint(target);
+            origin.AddOutwardRelationship(this);
+            target.AddInwardRelationship(this);
+        }
+
+        public NodeFootPrint Origin { get; private set; }
+
+        public NodeFootPrint Target { get; private set; }
     }
 }

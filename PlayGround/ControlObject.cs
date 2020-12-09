@@ -7,26 +7,24 @@ namespace PlayGround
 {
     public class ControlObject : Commodity
     {
-        private ControlObject() : base()
+        [JsonConstructor]
+        private ControlObject(object temp) : base(temp)
+        {
+
+        }
+
+        public ControlObject() : base(nameof(ControlObject))
         {
         }
 
-        private ControlObject(string label, string description)
+        protected override void AddProperties()
         {
+            base.AddProperties();
             AddProperty(nameof(AvevaId), "Aveva reference", typeof(string));
             AddProperty(nameof(Section), "Section in project", typeof(string));
             AddProperty(nameof(Area), "Area in project", typeof(string));
             AddProperty(nameof(ControlObjectCode), "Control object", typeof(string));
             AddProperty(nameof(Status), "Status", typeof(string));
-        }
-
-        public ControlObject(string avevaId, string section, string area, string code, string status) : this("Control object", "E3D design context")
-        {
-            AvevaId = avevaId;
-            Section = section;
-            Area = area;
-            ControlObjectCode = code;
-            Status = status;
         }
 
         [JsonIgnore]

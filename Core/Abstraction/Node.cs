@@ -38,63 +38,81 @@ namespace Live2k.Core.Abstraction
         protected override void InitializeListObjects()
         {
             base.InitializeListObjects();
-            Relationships = new List<RelationshipFootPrint>();
+            RelationshipsOut = new List<OutRelationshipFootPrint>();
+            RelationshipsIn = new List<InRelationshipFootPrint>();
         }
 
         /// <summary>
-        /// Relationships owned by current Node (current node as the origin)
+        /// Outward relationships owned by current Node (current node as the origin)
         /// </summary>
-        public IReadOnlyCollection<RelationshipFootPrint> Relationships { get; set; }
+        public IReadOnlyCollection<OutRelationshipFootPrint> RelationshipsOut { get; set; }
 
         /// <summary>
-        /// Add new relationships
+        /// In relationships owned by current Node (current node as the origin)
+        /// </summary>
+        public IReadOnlyCollection<InRelationshipFootPrint> RelationshipsIn { get; set; }
+
+        /// <summary>
+        /// Add new outwards relationships
         /// </summary>
         /// <param name="relationships"></param>
-        public virtual void AddRelationship(params Relationship[] relationships)
+        internal virtual void AddOutwardRelationship(Relationship relationship)
         {
-            if (relationships is null)
+            if (relationship is null)
             {
-                throw new ArgumentNullException(nameof(relationships));
+                throw new ArgumentNullException(nameof(relationship));
             }
 
-            var temp = new List<RelationshipFootPrint>(Relationships);
-            temp.AddRange(relationships.Select(a=>new RelationshipFootPrint(a)));
-            Relationships = new ReadOnlyCollection<RelationshipFootPrint>(temp);
+            var temp = new List<OutRelationshipFootPrint>(RelationshipsOut);
+            temp.Add(new OutRelationshipFootPrint(relationship));
+            RelationshipsOut = temp.AsReadOnly();
         }
 
         /// <summary>
-        /// Remove relationship on the index
+        /// Add new inwards relationship
         /// </summary>
-        /// <param name="index"></param>
-        public virtual void RemoveRelationship(int index)
+        /// <param name="relationship"></param>
+        internal void AddInwardRelationship(Relationship relationship)
         {
-            var temp = new List<RelationshipFootPrint>(Relationships);
-            temp.Remove(Relationships.ElementAt(index));
-            Relationships = new ReadOnlyCollection<RelationshipFootPrint>(temp);
-        }
-
-        /// <summary>
-        /// Remove relationships
-        /// </summary>
-        /// <param name="relationships"></param>
-        public virtual void RemoveRelationship(params RelationshipFootPrint[] relationships)
-        {
-            var temp = new List<RelationshipFootPrint>(Relationships.Except(relationships));
-            Relationships = new ReadOnlyCollection<RelationshipFootPrint>(temp);
-        }
-
-        /// <summary>
-        /// Remove relationships
-        /// </summary>
-        /// <param name="relationships"></param>
-        public virtual void RemoveRelationship(params Relationship[] relationships)
-        {
-            var temp = new List<RelationshipFootPrint>(Relationships);
-            foreach (var item in relationships)
+            if (relationship is null)
             {
-                temp.Remove(new RelationshipFootPrint(item));
+                throw new ArgumentNullException(nameof(relationship));
             }
-            Relationships = new ReadOnlyCollection<RelationshipFootPrint>(temp);
+
+            var temp = new List<InRelationshipFootPrint>(RelationshipsIn);
+            temp.Add(new InRelationshipFootPrint(relationship));
+            RelationshipsIn = temp.AsReadOnly();
+        }
+
+        /// <summary>
+        /// Remove relationship
+        /// </summary>
+        /// <param name="relationship"></param>
+        internal void RemoveRelationship(Relationship relationship)
+        {
+            if (relationship is null)
+            {
+                throw new ArgumentNullException(nameof(relationship));
+            }
+
+            RemoveInwardRelationship(relationship);
+            RemoveOutwardRelationship(relationship);
+        }
+
+        private void RemoveInwardRelationship(Relationship relationship)
+        {
+            var temp = new List<InRelationshipFootPrint>(RelationshipsIn);
+            var rel = temp.FirstOrDefault(a => a.Id == relationship.Id);
+            temp.Remove(rel);
+            RelationshipsIn = temp.AsReadOnly();
+        }
+
+        private void RemoveOutwardRelationship(Relationship relationship)
+        {
+            var temp = new List<OutRelationshipFootPrint>(RelationshipsOut);
+            var rel = temp.FirstOrDefault(a => a.Id == relationship.Id);
+            temp.Remove(rel);
+            RelationshipsOut = temp.AsReadOnly();
         }
     }
 }
