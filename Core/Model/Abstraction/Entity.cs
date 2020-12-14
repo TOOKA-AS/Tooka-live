@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Live2k.Core.Interfaces;
-using Live2k.Core.Validation;
+using System.Reflection;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Abstraction
@@ -61,11 +61,13 @@ namespace Live2k.Core.Abstraction
         /// <summary>
         /// Unique ID associated with the entity
         /// </summary>
+        [Required]
         public string Id { get; set; }
 
         /// <summary>
         /// Label of the entity (Type)
         /// </summary>
+        [Required]
         public string Label { get; set; }
 
         /// <summary>
@@ -272,12 +274,45 @@ namespace Live2k.Core.Abstraction
         }
 
         /// <summary>
-        /// Validation method
+        /// Validate state of current object
+        /// </summary>
+        /// <param name="validationContext"></param>
+        /// <returns></returns>
+        public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            // Get All properties
+            var allProperties = GetAllProperties();
+
+            // Validate each property
+            foreach (var prop in allProperties)
+            {
+                yield return ValidateProperty(prop);
+            }
+        }
+
+        private ValidationResult ValidateProperty(PropertyInfo prop)
+        {
+            var propValue = prop.GetValue(this);
+
+            // Get All attributes which are validation related
+            var attributes = prop.GetCustomAttributes<ValidationAttribute>();
+
+            foreach (var att in attributes)
+            {
+                if (!att.IsValid(propValue))
+                    return new ValidationResult(att.ErrorMessage);
+            }
+
+            return ValidationResult.Success;
+        }
+
+        /// <summary>
+        /// Get list of all property infos
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ValidationResult> Validate()
+        private IEnumerable<PropertyInfo> GetAllProperties()
         {
-            throw new NotImplementedException();
+            return GetType().GetProperties();
         }
     }
 }

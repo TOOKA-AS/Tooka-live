@@ -3,14 +3,22 @@ using System.IO;
 using Live2k.Core.Basic;
 using Live2k.Core.Basic.Commodities;
 using Live2k.Core.Basic.Relationships;
+using Live2k.MongoDb;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace PlayGround
 {
     class Program
     {
+        private static MongoClient _client;
+
         static void Main(string[] args)
         {
+            // connection to MongoDb
+            _client = new MongoClient("mongodb+srv://m001-student:m001-mongodb-basics@sandbox.aidnp.mongodb.net/temp?retryWrites=true&w=majority");
+
+
             //Test1();
 
             // make an SDI
@@ -53,6 +61,11 @@ namespace PlayGround
                 serializer.Serialize(coWriter, co);
                 serializer.Serialize(relWriter, rel);
             }
+
+            var repos = new Repository(_client);
+            repos.Add(sdi);
+            repos.Add(co);
+            repos.Add(rel);
         }
 
         static void Test1()
@@ -93,6 +106,9 @@ namespace PlayGround
             {
                 serializer.Serialize(writer, user, typeof(User));
             }
+
+            var repos = new Repository(_client);
+            repos.Add(user);
         }
 
         static void Deserialize()

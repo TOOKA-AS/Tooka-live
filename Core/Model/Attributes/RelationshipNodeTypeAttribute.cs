@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Live2k.Core.Attributes
 {
     public enum RelationshipNodeEnum { Origin, Target }

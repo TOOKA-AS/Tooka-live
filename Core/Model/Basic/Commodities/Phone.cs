@@ -1,16 +1,17 @@
 ﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Basic.Commodities
 {
-    public class RevisionCommodity : Commodity
+    public class Phone : Commodity
     {
         /// <summary>
         /// Constructor to be used by JSON/BSON deserializer
         /// </summary>
         /// <param name="temp"></param>
         [JsonConstructor]
-        protected RevisionCommodity(object temp) : base(temp)
+        protected Phone(object temp) : base(temp)
         {
 
         }
@@ -18,32 +19,33 @@ namespace Live2k.Core.Basic.Commodities
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public RevisionCommodity() : base(nameof(RevisionCommodity))
-        {
-        }
-
-        protected RevisionCommodity(string label) : base(label)
+        public Phone() : base(nameof(Phone))
         {
             
+        }
+
+        protected Phone(string label) : base(label)
+        {
+
         }
 
         protected override void AddProperties()
         {
             base.AddProperties();
-            AddProperty(nameof(RevisionNumber), "Revision number", typeof(int));
+            AddProperty("Phone number", "Phone number", typeof(string));
         }
 
-        [JsonIgnore]
-        public int RevisionNumber
+        [JsonIgnore, BsonIgnore]
+        public string PhoneNumber
         {
             get
             {
-                return (int)this[nameof(RevisionNumber)];
+                return (string)this["Phone number"];
             }
 
             set
             {
-                this[nameof(RevisionNumber)] = value;
+                this["Phone number"] = value;
             }
         }
     }

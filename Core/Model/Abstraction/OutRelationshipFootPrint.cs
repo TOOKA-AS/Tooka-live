@@ -1,27 +1,28 @@
 ﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Abstraction
 {
-    public class OutRelationshipFootPrint
+    public class InRelationshipFootPrint
     {
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         private Relationship _relationship;
 
-        private OutRelationshipFootPrint()
+        private InRelationshipFootPrint()
         {
 
         }
 
-        public OutRelationshipFootPrint(Relationship relationship) : this()
+        public InRelationshipFootPrint(Relationship relationship) : this()
         {
             this._relationship = relationship ?? throw new ArgumentNullException(nameof(relationship));
             Id = relationship.Id ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Id)} cannot be null");
             Label = relationship.Label ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Label)} cannot be null");
             Description = relationship.Description;
-            TargetNodeId = relationship.Target.NodeId ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Target.NodeId)} cannot be null");
-            TargetNodeLabel = relationship.Target.NodeLabel ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Target.NodeLabel)} cannot be null");
-            TargetNodeDescription = relationship.Target.NodeDescription;
+            OriginNodeId = relationship.Origin.NodeId ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Target.NodeId)} cannot be null");
+            OriginNodeLabel = relationship.Origin.NodeLabel ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Target.NodeLabel)} cannot be null");
+            OriginNodeDescription = relationship.Origin.NodeDescription;
         }
 
         /// <summary>
@@ -40,18 +41,18 @@ namespace Live2k.Core.Abstraction
         public string Description { get; set; }
 
         /// <summary>
-        /// Id of the node targeted by the relationship
+        /// Id of the origin node of the relationship
         /// </summary>
-        public string TargetNodeId { get; set; }
+        public string OriginNodeId { get; set; }
 
         /// <summary>
-        /// Label of the node targeted by the relationship
+        /// Label of the origin node of the relationship
         /// </summary>
-        public string TargetNodeLabel { get; set; }
+        public string OriginNodeLabel { get; set; }
 
         /// <summary>
-        /// Description of the node targeted by the relationship
+        /// Description of the origin node of the relationship
         /// </summary>
-        public string TargetNodeDescription { get; set; }
+        public string OriginNodeDescription { get; set; }
     }
 }

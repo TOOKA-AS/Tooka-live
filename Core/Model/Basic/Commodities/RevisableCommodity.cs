@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Basic.Commodities
@@ -37,7 +38,7 @@ namespace Live2k.Core.Basic.Commodities
             AddListProperty(nameof(Revisions), "Revisions", typeof(RevisionCommodity));
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public int RevisionsCount
         {
             get
@@ -51,7 +52,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public IReadOnlyCollection<RevisionCommodity> Revisions
         {
             get

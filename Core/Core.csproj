@@ -6,17 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Abstraction\" />
-    <Folder Include="Basic\" />
+    <Folder Include="Model\Basic\" />
     <Folder Include="Utilities\" />
     <Folder Include="Interfaces\" />
-    <Folder Include="Attributes\" />
-    <Folder Include="Validation\" />
-    <Folder Include="Basic\Commodities\" />
-    <Folder Include="Basic\Relationships\" />
-    <Folder Include="Basic\Assignments\" />
+    <Folder Include="Model\" />
+    <Folder Include="Model\Abstraction\" />
+    <Folder Include="Model\Attributes\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="MongoDB.Driver" Version="2.11.5" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 ﻿using System;
 using Live2k.Core.Basic.Commodities;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace PlayGround
@@ -23,7 +24,7 @@ namespace PlayGround
             AddProperty(nameof(NumberOfDocs), "Number of attached documents", typeof(int));
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public int NumberOfDocs
         {
             get

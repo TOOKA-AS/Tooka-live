@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Live2k.Core.Basic;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace PlayGround
@@ -27,7 +28,7 @@ namespace PlayGround
             AddProperty(nameof(Status), "Status", typeof(string));
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string AvevaId
         {
             get
@@ -41,7 +42,7 @@ namespace PlayGround
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string Section
         {
             get
@@ -55,7 +56,7 @@ namespace PlayGround
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string Area
         {
             get
@@ -69,7 +70,7 @@ namespace PlayGround
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string ControlObjectCode
         {
             get
@@ -83,7 +84,7 @@ namespace PlayGround
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string Status
         {
             get

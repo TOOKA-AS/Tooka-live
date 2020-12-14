@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Live2k.Core.Basic.Commodities;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace PlayGround
@@ -23,7 +25,8 @@ namespace PlayGround
             AddProperty(nameof(Section), "Section", typeof(string));
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
+        [Required]
         public string DataCode
         {
             get
@@ -37,7 +40,7 @@ namespace PlayGround
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string Section
         {
             get

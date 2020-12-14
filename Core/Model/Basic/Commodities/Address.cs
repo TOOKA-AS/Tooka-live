@@ -1,4 +1,5 @@
 ﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Basic.Commodities
@@ -37,7 +38,7 @@ namespace Live2k.Core.Basic.Commodities
             AddProperty("Postal code", "Postal code", typeof(string));
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string Provience
         {
             get
@@ -51,7 +52,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string City
         {
             get
@@ -65,7 +66,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string Street
         {
             get
@@ -79,7 +80,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string PostalCode
         {
             get

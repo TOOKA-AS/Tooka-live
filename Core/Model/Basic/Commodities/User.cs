@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Live2k.Core.Attributes;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Basic.Commodities
@@ -41,7 +44,9 @@ namespace Live2k.Core.Basic.Commodities
             AddListProperty("Addresses", "List of addresses", typeof(Address));
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
+        // validation attributes
+        [Required]
         public string FirstName
         {
             get
@@ -55,7 +60,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public string MiddleName
         {
             get
@@ -69,7 +74,9 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
+        // validation attributes
+        [Required]
         public string LastName
         {
             get
@@ -83,7 +90,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public DateTime Birthday
         {
             get
@@ -97,7 +104,9 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
+        // validation attributes
+        [Required, StringFormat("{$FirstName}.{$LastName}@compnay.com")]
         public string EmailAddress
         {
             get
@@ -111,7 +120,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public IReadOnlyCollection<Phone> PhoneNumbers
         {
             get
@@ -125,7 +134,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public IReadOnlyCollection<Address> Addresses
         {
             get
@@ -139,7 +148,9 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
+        // validation attributes
+        [Required]
         public Address HomeAddress
         {
             get
@@ -153,7 +164,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public Address ShippingAddress
         {
             get
@@ -167,7 +178,9 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
+        // validation attributes
+        [Required]
         public Phone MobilePhone
         {
             get

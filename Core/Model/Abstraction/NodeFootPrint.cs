@@ -1,11 +1,12 @@
 ﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Abstraction
 {
     public class NodeFootPrint
     {
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         private Node _node;
 
         private NodeFootPrint()

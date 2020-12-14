@@ -1,4 +1,5 @@
 ﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Basic.Commodities
@@ -35,7 +36,7 @@ namespace Live2k.Core.Basic.Commodities
             AddProperty(nameof(Langtitude), "Latitude of location", typeof(double));
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public double Latitude
         {
             get
@@ -49,7 +50,7 @@ namespace Live2k.Core.Basic.Commodities
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore, BsonIgnore]
         public double Langtitude
         {
             get
