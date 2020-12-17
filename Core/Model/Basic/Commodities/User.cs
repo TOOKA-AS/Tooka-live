@@ -7,7 +7,7 @@ using Live2k.Core.Attributes;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace Live2k.Core.Basic.Commodities
+namespace Live2k.Core.Model.Basic.Commodities
 {
     public class User : Commodity
     {

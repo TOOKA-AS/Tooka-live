@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Live2k.Core.Base;
-using Live2k.Core.Basic;
-using Live2k.Core.Basic.Commodities;
-using Live2k.Core.Basic.Relationships;
+using Live2k.Core.Model.Base;
+using Live2k.Core.Model.Basic;
+using Live2k.Core.Model.Basic.Commodities;
+using Live2k.Core.Model.Basic.Relationships;
 using Live2k.Core.Serializer;
 using Live2k.MongoDb;
 using MongoDB.Bson;

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Live2k.Core.Model.Attributes;
+using Live2k.Core.Attributes;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace Live2k.Core.Basic.Commodities
+namespace Live2k.Core.Model.Basic.Commodities
 {
     public class RevisableCommodity : Commodity
     {

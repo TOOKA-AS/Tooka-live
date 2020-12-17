@@ -1,8 +1,8 @@
 ﻿using System;
-using Live2k.Core.Base;
+using Live2k.Core.Model.Base;
 using Newtonsoft.Json;
 
-namespace Live2k.Core.Basic.Relationships
+namespace Live2k.Core.Model.Basic.Relationships
 {
     public class ReferenceRelationship : Relationship
     {

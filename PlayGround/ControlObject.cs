@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Live2k.Core.Basic;
+using Live2k.Core.Model.Basic;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 

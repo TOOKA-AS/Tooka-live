@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Live2k.Core.Basic.Commodities;
-using Live2k.Core.Model.Attributes;
+using Live2k.Core.Model.Basic.Commodities;
+using Live2k.Core.Attributes;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 

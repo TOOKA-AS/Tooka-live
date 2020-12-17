@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Live2k.Core.Basic.Assignments
+namespace Live2k.Core.Model.Basic.Assignments
 {
     public class RevisableAssignment : Assignment
     {

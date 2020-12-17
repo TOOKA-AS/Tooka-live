@@ -1,5 +1,5 @@
 ﻿using System;
-using Live2k.Core.Base;
+using Live2k.Core.Model.Base;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;

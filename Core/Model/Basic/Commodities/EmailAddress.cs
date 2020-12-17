@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Live2k.Core.Basic.Commodities
+namespace Live2k.Core.Model.Basic.Commodities
 {
     public class EmailAddress : Commodity
     {
