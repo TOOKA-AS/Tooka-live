@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Abstraction
@@ -11,7 +12,7 @@ namespace Live2k.Core.Abstraction
     /// <summary>
     /// Everything in Live2k is an entity at very high level
     /// </summary>
-    public abstract class Entity : IValidatableObject
+    public class Entity : IValidatableObject
     {
         /// <summary>
         /// Constructor to be used by JSON/BSON deserializer
@@ -28,8 +29,10 @@ namespace Live2k.Core.Abstraction
         /// </summary>
         private Entity()
         {
+            ActualType = GetType().FullName;
             InitializeListObjects();
             AddProperties();
+            GenerateId();
         }
 
         /// <summary>
@@ -39,6 +42,15 @@ namespace Live2k.Core.Abstraction
         protected Entity(string label) : this()
         {
             Label = label;
+        }
+
+        /// <summary>
+        /// Method to generate unique ID
+        /// <p>By default GUID is used</p>
+        /// </summary>
+        protected virtual void GenerateId()
+        {
+            Id = Guid.NewGuid().ToString();
         }
 
         /// <summary>
@@ -57,6 +69,8 @@ namespace Live2k.Core.Abstraction
         {
 
         }
+
+        public string ActualType { get; private set; }
 
         /// <summary>
         /// Unique ID associated with the entity
@@ -290,17 +304,30 @@ namespace Live2k.Core.Abstraction
             }
         }
 
+        /// <summary>
+        /// Validate property against current object
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
         private ValidationResult ValidateProperty(PropertyInfo prop)
         {
-            var propValue = prop.GetValue(this);
-
             // Get All attributes which are validation related
             var attributes = prop.GetCustomAttributes<ValidationAttribute>();
 
-            foreach (var att in attributes)
+            if (attributes != null && attributes.Count() != 0)
             {
-                if (!att.IsValid(propValue))
-                    return new ValidationResult(att.ErrorMessage);
+                var propValue = prop.GetValue(this);
+                foreach (var att in attributes)
+                {
+                    try
+                    {
+                        att.Validate(propValue, prop.Name);
+                    }
+                    catch (Exception ex)
+                    {
+                        return new ValidationResult(ex.Message);
+                    }
+                }
             }
 
             return ValidationResult.Success;
@@ -313,6 +340,18 @@ namespace Live2k.Core.Abstraction
         private IEnumerable<PropertyInfo> GetAllProperties()
         {
             return GetType().GetProperties();
+        }
+
+        public T Cast<T>() where T: Entity, new()
+        {
+            var obj = new T();
+            obj.Id = Id;
+            obj.Label = Label;
+            obj.Description = Description;
+            obj.Tags = Tags;
+            obj.Properties = Properties;
+
+            return obj;
         }
     }
 }

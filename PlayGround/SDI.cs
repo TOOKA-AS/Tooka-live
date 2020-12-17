@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Live2k.Core.Basic.Commodities;
+using Live2k.Core.Model.Attributes;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace PlayGround
 {
+    [RevisionType(typeof(SdiRevision))]
     public sealed class SDI : RevisableCommodity
     {
         [JsonConstructor]

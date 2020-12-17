@@ -10,7 +10,7 @@ namespace Live2k.Core.Abstraction
     /// <summary>
     /// Base object type
     /// </summary>
-    public abstract class Node : Entity
+    public class Node : Entity
     {
         /// <summary>
         /// Constructor to be used by JSON/BSON deserializer

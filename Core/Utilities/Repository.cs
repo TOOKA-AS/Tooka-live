@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using Live2k.Core.Abstraction;
+using Live2k.Core.Basic;
+using Live2k.Core.Basic.Commodities;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
 namespace Live2k.MongoDb
@@ -10,6 +15,11 @@ namespace Live2k.MongoDb
     {
         private readonly MongoClient _client;
         private readonly IMongoDatabase _database;
+
+        static Repository()
+        {
+            
+        }
 
         public Repository(MongoClient client)
         {
@@ -28,6 +38,16 @@ namespace Live2k.MongoDb
             collection.InsertOne(entity);
         }
 
+        public IEnumerable<T> GetAll<T>() where T: Entity
+        {
+            // Get relevant collection
+            var collection = GetCollection(typeof(T)).OfType<T>();
+
+            // filter
+            var filter = Builders<T>.Filter.Eq(a => a.Label, typeof(T).Name);
+            return collection.Find(filter).ToList();
+        }
+
         private void ValidateEntity(Entity entity)
         {
             var result = entity.Validate(null);
@@ -36,6 +56,16 @@ namespace Live2k.MongoDb
             {
                 throw new ValidationException(fails.First(), null, entity);
             }
+        }
+
+        private IMongoCollection<Entity> GetCollection(Type type)
+        {
+            if (type.IsSubclassOf(typeof(Node)))
+                return _database.GetCollection<Entity>("Nodes");
+            else if (type.IsSubclassOf(typeof(Relationship)))
+                return _database.GetCollection<Entity>("Relationships");
+            else
+                throw new EntryPointNotFoundException($"Could not find relevant collections for {type}");
         }
 
         private IMongoCollection<Entity> GetCollection(Entity entity)
