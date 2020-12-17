@@ -1,5 +1,5 @@
 ﻿using System;
-using Live2k.Core.Abstraction;
+using Live2k.Core.Base;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 

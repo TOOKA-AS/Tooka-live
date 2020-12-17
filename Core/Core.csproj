@@ -10,7 +10,7 @@
     <Folder Include="Utilities\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Model\" />
-    <Folder Include="Model\Abstraction\" />
+    <Folder Include="Model\Base\" />
     <Folder Include="Model\Attributes\" />
     <Folder Include="Serializer\" />
     <Folder Include="Events\" />

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Live2k.Core.Abstraction;
+using Live2k.Core.Base;
 using Live2k.Core.Basic;
 using Live2k.Core.Basic.Commodities;
 using Live2k.Core.Basic.Relationships;

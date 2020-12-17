@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Live2k.Core.Abstraction;
+using Live2k.Core.Base;
 using Live2k.Core.Basic;
 using Live2k.Core.Basic.Commodities;
 using MongoDB.Bson.Serialization;
