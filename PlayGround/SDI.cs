@@ -4,6 +4,7 @@ using Live2k.Core.Model.Basic.Commodities;
 using Live2k.Core.Attributes;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+using Live2k.Core.Utilities;
 
 namespace PlayGround
 {
@@ -11,12 +12,12 @@ namespace PlayGround
     public sealed class SDI : RevisableCommodity
     {
         [JsonConstructor]
-        private SDI(object temp)
+        private SDI(object temp) : base(temp)
         {
 
         }
 
-        public SDI() : base(nameof(SDI))
+        public SDI(Mediator mediator) : base(mediator, nameof(SDI))
         {
         }
 

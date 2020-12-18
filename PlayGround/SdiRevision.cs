@@ -1,5 +1,6 @@
 ﻿using System;
 using Live2k.Core.Model.Basic.Commodities;
+using Live2k.Core.Utilities;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
@@ -7,13 +8,18 @@ namespace PlayGround
 {
     public sealed class SdiRevision : RevisionCommodity
     {
-        [JsonConstructor]
-        private SdiRevision(object temp)
+        public SdiRevision() : base()
         {
 
         }
 
-        public SdiRevision() : base(nameof(SdiRevision))
+        [JsonConstructor]
+        private SdiRevision(object temp) : base(temp)
+        {
+
+        }
+
+        public SdiRevision(Mediator mediator) : base(mediator, nameof(SdiRevision))
         {
 
         }

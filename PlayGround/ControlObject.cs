@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Live2k.Core.Model.Basic;
+using Live2k.Core.Utilities;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
@@ -14,7 +15,7 @@ namespace PlayGround
 
         }
 
-        public ControlObject() : base(nameof(ControlObject))
+        public ControlObject(Mediator mediator) : base(mediator, nameof(ControlObject))
         {
         }
 

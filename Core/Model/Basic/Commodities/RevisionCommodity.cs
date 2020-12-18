@@ -1,4 +1,5 @@
 ﻿using System;
+using Live2k.Core.Utilities;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
@@ -6,6 +7,11 @@ namespace Live2k.Core.Model.Basic.Commodities
 {
     public class RevisionCommodity : Commodity
     {
+        protected RevisionCommodity()
+        {
+
+        }
+
         /// <summary>
         /// Constructor to be used by JSON/BSON deserializer
         /// </summary>
@@ -19,11 +25,11 @@ namespace Live2k.Core.Model.Basic.Commodities
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public RevisionCommodity() : base(nameof(RevisionCommodity))
+        public RevisionCommodity(Mediator mediator) : base(mediator, nameof(RevisionCommodity))
         {
         }
 
-        protected RevisionCommodity(string label) : base(label)
+        protected RevisionCommodity(Mediator mediator, string label) : base(mediator, label)
         {
             
         }

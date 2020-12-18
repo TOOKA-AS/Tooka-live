@@ -1,5 +1,6 @@
 ﻿using System;
 using Live2k.Core.Model.Base;
+using Live2k.Core.Utilities;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Model.Basic
@@ -9,6 +10,11 @@ namespace Live2k.Core.Model.Basic
     /// </summary>
     public class Assignment : Node
     {
+        protected Assignment()
+        {
+
+        }
+
         /// <summary>
         /// Constructor to be used by JSON/BSON deserializer
         /// </summary>
@@ -22,12 +28,12 @@ namespace Live2k.Core.Model.Basic
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public Assignment() : base(nameof(Assignment))
+        public Assignment(Mediator mediator) : base(mediator, nameof(Assignment))
         {
 
         }
 
-        protected Assignment(string label) : base(label)
+        protected Assignment(Mediator mediator, string label) : base(mediator, label)
         {
 
         }

@@ -6,6 +6,7 @@ using Live2k.Core.Model.Basic;
 using Live2k.Core.Model.Basic.Commodities;
 using Live2k.Core.Model.Basic.Relationships;
 using Live2k.Core.Serializer;
+using Live2k.Core.Utilities;
 using Live2k.MongoDb;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -63,17 +64,17 @@ namespace PlayGround
 
             //// TEST
 
-            var db = _client.GetDatabase("Live2K");
-            var collection = db.GetCollection<Node>("Nodes");
-            //var method = db.GetType().GetMethod("GetCollection").MakeGenericMethod(Type.GetType("PlayGround.SDI"));
-            //var collection = method.Invoke(db, new[] { "Nodes", null });
-            var found = collection.Find(a => a.Label == "SDI");
-            var temp = found.CountDocuments();
-            var founditem = collection.Find(a => a.Label == "SDI")
-                .ToList().FirstOrDefault();
+            //var db = _client.GetDatabase("Live2K");
+            //var collection = db.GetCollection<Node>("Nodes");
+            ////var method = db.GetType().GetMethod("GetCollection").MakeGenericMethod(Type.GetType("PlayGround.SDI"));
+            ////var collection = method.Invoke(db, new[] { "Nodes", null });
+            //var found = collection.Find(a => a.Label == "SDI");
+            //var temp = found.CountDocuments();
+            //var founditem = collection.Find(a => a.Label == "SDI")
+            //    .ToList().FirstOrDefault();
 
-            var castMethod = founditem.GetType().GetMethod("Cast").MakeGenericMethod(Type.GetType(founditem.ActualType));
-            SDI asSDI = castMethod.Invoke(founditem, new object[0]) as SDI;
+            //var castMethod = founditem.GetType().GetMethod("Cast").MakeGenericMethod(Type.GetType(founditem.ActualType));
+            //SDI asSDI = castMethod.Invoke(founditem, new object[0]) as SDI;
 
             //var number = founditem.CountDocuments();
 
@@ -90,8 +91,18 @@ namespace PlayGround
 
             //Test1();
 
+            // Mediator
+            var mediator = new Mediator();
+            var user = new User();
+            user.Id = "faramarz.bodaghi@outlook.com";
+            user.FirstName = "Faramarz";
+            user.LastName = "Bodaghi";
+            user.Birthday = new DateTime(1986, 9, 19);
+            mediator.SessionUser = user;
+
+
             // make an SDI
-            var sdi = new SDI();
+            var sdi = new SDI(mediator);
             //sdi.Id = Guid.NewGuid().ToString();
             sdi.DataCode = "SDI-222-11-01";
             sdi.Section = "222";
@@ -99,7 +110,7 @@ namespace PlayGround
             var xx = sdi.Revisions;
 
             // revise SDI
-            var revision = sdi.Revise().Cast<SdiRevision>();
+            var revision = sdi.Revise(mediator).Cast<SdiRevision>();
             //revision.Id = Guid.NewGuid().ToString();
             revision.NumberOfDocs = 20;
             revision.Tags.Add("ssss");
@@ -107,7 +118,7 @@ namespace PlayGround
             var x = sdi.Revisions;
 
             // Control object
-            var co = new ControlObject();
+            var co = new ControlObject(mediator);
             //co.Id = Guid.NewGuid().ToString();
             co.AvevaId = "=1234/4345";
             co.Section = "222";
@@ -134,51 +145,51 @@ namespace PlayGround
             var repos = new Repository(_client);
             repos.Add(sdi);
             repos.Add(co);
-            repos.Add(rel);
+            repos.AddEntity(rel);
         }
 
-        static void Test1()
-        {
-            Deserialize();
+        //static void Test1()
+        //{
+        //    Deserialize();
 
-            var user = new User();
-            user.FirstName = "Faramarz";
-            user.LastName = "Bodaghi";
+        //    var user = new User();
+        //    user.FirstName = "Faramarz";
+        //    user.LastName = "Bodaghi";
 
-            var phone = new Phone();
-            phone.PhoneNumber = "98100918";
-            phone.Tags.Add("Mobile");
-            phone.Description = "Mobile";
+        //    var phone = new Phone();
+        //    phone.PhoneNumber = "98100918";
+        //    phone.Tags.Add("Mobile");
+        //    phone.Description = "Mobile";
 
-            user.MobilePhone = phone;
+        //    user.MobilePhone = phone;
 
-            user.Birthday = new DateTime(1986, 9, 19);
-
-
-            var address = new Address();
-            address.City = "Høvik";
-            address.Label = "Home address";
-            address.Langtitude = 122442;
-            address.Latitude = 33234;
-            address.PostalCode = "1365";
-            address.Provience = "Viken";
-            address.Street = "Kokkerudåsen 21";
-            address.Description = "Temporart home address";
-
-            user.AddToListProperty("Addresses", "Home address", address);
-            var home = user.HomeAddress;
+        //    user.Birthday = new DateTime(1986, 9, 19);
 
 
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.TypeNameHandling = TypeNameHandling.Auto;
-            using (var writer = new StreamWriter("TestJson.json"))
-            {
-                serializer.Serialize(writer, user, typeof(User));
-            }
+        //    var address = new Address();
+        //    address.City = "Høvik";
+        //    address.Label = "Home address";
+        //    address.Langtitude = 122442;
+        //    address.Latitude = 33234;
+        //    address.PostalCode = "1365";
+        //    address.Provience = "Viken";
+        //    address.Street = "Kokkerudåsen 21";
+        //    address.Description = "Temporart home address";
 
-            var repos = new Repository(_client);
-            repos.Add(user);
-        }
+        //    user.AddToListProperty("Addresses", "Home address", address);
+        //    var home = user.HomeAddress;
+
+
+        //    JsonSerializer serializer = new JsonSerializer();
+        //    serializer.TypeNameHandling = TypeNameHandling.Auto;
+        //    using (var writer = new StreamWriter("TestJson.json"))
+        //    {
+        //        serializer.Serialize(writer, user, typeof(User));
+        //    }
+
+        //    var repos = new Repository(_client);
+        //    repos.Add(user);
+        //}
 
         static void Deserialize()
         {

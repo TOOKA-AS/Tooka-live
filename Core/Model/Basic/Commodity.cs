@@ -1,5 +1,6 @@
 ﻿using System;
 using Live2k.Core.Model.Base;
+using Live2k.Core.Utilities;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
@@ -11,6 +12,11 @@ namespace Live2k.Core.Model.Basic
     /// </summary>
     public class Commodity : Node
     {
+        protected Commodity()
+        {
+
+        }
+
         /// <summary>
         /// Constructor to be used by JSON/BSON deserializer
         /// </summary>
@@ -24,12 +30,12 @@ namespace Live2k.Core.Model.Basic
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public Commodity() : base(nameof(Commodity))
+        public Commodity(Mediator mediator) : base(mediator, nameof(Commodity))
         {
 
         }
 
-        protected Commodity(string label) : base(label)
+        protected Commodity(Mediator mediator, string label) : base(mediator, label)
         {
 
         }

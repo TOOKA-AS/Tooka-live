@@ -1,10 +1,11 @@
 ﻿using System;
+using Live2k.Core.Utilities;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace Live2k.Core.Model.Basic.Commodities
+namespace Live2k.Core.Model.Base
 {
-    public class Location : Commodity
+    public class Location : Entity
     {
         /// <summary>
         /// Constructor to be used by JSON/BSON deserializer

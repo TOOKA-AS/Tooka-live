@@ -4,12 +4,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Live2k.Core.Attributes;
+using Live2k.Core.Utilities;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace Live2k.Core.Model.Basic.Commodities
+namespace Live2k.Core.Model.Base
 {
-    public class User : Commodity
+    public class User : Entity
     {
         /// <summary>
         /// Constructor to be used by JSON/BSON deserializer
@@ -89,6 +90,11 @@ namespace Live2k.Core.Model.Basic.Commodities
                 this["Last name"] = value;
             }
         }
+
+        [JsonIgnore, BsonIgnore]
+        public string FullName => string.IsNullOrWhiteSpace(MiddleName) ?
+            string.Format("{0} {1}", FirstName, LastName) :
+            string.Format("{0} {1} {2}", FirstName, MiddleName, LastName);
 
         [JsonIgnore, BsonIgnore]
         public DateTime Birthday

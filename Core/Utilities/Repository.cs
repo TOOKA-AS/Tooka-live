@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Live2k.Core.Model;
 using Live2k.Core.Model.Base;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -25,9 +26,22 @@ namespace Live2k.MongoDb
             this._database = _client.GetDatabase("Live2K");
         }
 
-        public void Add(Entity entity)
+        public void Add<T>(T node) where T: Node
         {
             // validate entity
+            ValidateEntity(node);
+
+            // Record history
+            RecordHistory(node);
+
+            // Get relevant collection
+            var collection = GetCollection(node);
+
+            collection.InsertOne(node);
+        }
+
+        public void AddEntity<T>(T entity) where T: Entity
+        {
             ValidateEntity(entity);
 
             // Get relevant collection
@@ -36,7 +50,18 @@ namespace Live2k.MongoDb
             collection.InsertOne(entity);
         }
 
-        public IEnumerable<T> GetAll<T>() where T: Entity
+        private void RecordHistory<T>(T node) where T : Node
+        {
+            node.AddHistory();
+
+            // Get history collection
+            var collection = this._database.GetCollection<ChangeTracker>("History");
+            var tracker = node.GetTracker();
+            tracker.StopTracking();
+            collection.InsertOne(tracker);
+        }
+
+        public IEnumerable<T> GetAll<T>() where T: Node
         {
             // Get relevant collection
             var collection = GetCollection(typeof(T)).OfType<T>();
