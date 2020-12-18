@@ -8,11 +8,17 @@ namespace Live2k.Core.Model
         /// <summary>
         /// Previous instance of property
         /// </summary>
-        public BaseProperty Previsous { get; set; }
+        public object PrevisousValue { get; set; }
 
         /// <summary>
         /// Current instance of property
         /// </summary>
-        public BaseProperty Current { get; set; }
+        public object CurrentValue { get; set; }
+
+        public override string Report()
+        {
+            var fromBase =  base.Report();
+            return string.Format("{0}\n\tOld value: {1}\n\tNew value: {2}", fromBase, PrevisousValue, CurrentValue);
+        }
     }
 }

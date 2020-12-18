@@ -21,6 +21,15 @@ namespace PlayGround
 
         static void Main(string[] args)
         {
+            // Mediator
+            var mediator = new Mediator();
+            var user = new User("Designer", "faramarz.bodaghi@outlook.com");
+            //user.Id = "faramarz.bodaghi@outlook.com";
+            user.FirstName = "Faramarz";
+            user.LastName = "Bodaghi";
+            user.Birthday = new DateTime(1986, 9, 19);
+            mediator.SessionUser = user;
+
             //BsonSerializer.RegisterSerializationProvider(new Live2kSerializationProvider());
             BsonSerializer.RegisterDiscriminatorConvention(typeof(BaseProperty), new BasePropertyDiscriminator());
             //BsonClassMap.RegisterClassMap<Entity>();
@@ -64,10 +73,10 @@ namespace PlayGround
 
             //// TEST
 
-            //var db = _client.GetDatabase("Live2K");
+            var db = _client.GetDatabase("Live2K");
             //var collection = db.GetCollection<Node>("Nodes");
-            ////var method = db.GetType().GetMethod("GetCollection").MakeGenericMethod(Type.GetType("PlayGround.SDI"));
-            ////var collection = method.Invoke(db, new[] { "Nodes", null });
+            //var method = db.GetType().GetMethod("GetCollection").MakeGenericMethod(Type.GetType("PlayGround.SDI"));
+            //var collection = method.Invoke(db, new[] { "Nodes", null });
             //var found = collection.Find(a => a.Label == "SDI");
             //var temp = found.CountDocuments();
             //var founditem = collection.Find(a => a.Label == "SDI")
@@ -75,6 +84,15 @@ namespace PlayGround
 
             //var castMethod = founditem.GetType().GetMethod("Cast").MakeGenericMethod(Type.GetType(founditem.ActualType));
             //SDI asSDI = castMethod.Invoke(founditem, new object[0]) as SDI;
+            //asSDI.Section = "44542";
+            //asSDI.Label = "ChangedSDI";
+
+            // Get sdi
+            var tempRepos = new Repository(mediator, _client);
+            var foundSdi = tempRepos.Get<SDI>(a => a.Label == "SDI");
+            foundSdi.Description = "Aram is observing";
+            foundSdi.Revisions.FirstOrDefault().Description = "We are adding a desc here";
+            tempRepos.Update(foundSdi);
 
             //var number = founditem.CountDocuments();
 
@@ -91,14 +109,7 @@ namespace PlayGround
 
             //Test1();
 
-            // Mediator
-            var mediator = new Mediator();
-            var user = new User();
-            user.Id = "faramarz.bodaghi@outlook.com";
-            user.FirstName = "Faramarz";
-            user.LastName = "Bodaghi";
-            user.Birthday = new DateTime(1986, 9, 19);
-            mediator.SessionUser = user;
+            
 
 
             // make an SDI
@@ -142,7 +153,7 @@ namespace PlayGround
                 serializer.Serialize(relWriter, rel);
             }
 
-            var repos = new Repository(_client);
+            var repos = new Repository(mediator, _client);
             repos.Add(sdi);
             repos.Add(co);
             repos.AddEntity(rel);

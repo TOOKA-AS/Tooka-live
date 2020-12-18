@@ -25,14 +25,25 @@ namespace Live2k.Core.Model.Base
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public User() : base(nameof(User))
+        protected User() : base(nameof(User))
         {
 
         }
 
-        protected User(string label) : base(label)
+        public User(string label, string emailAddress) : base(label)
         {
+            EmailAddress = emailAddress;
+            InvokeInitializationEnded(typeof(User));
+        }
 
+        protected override void GenerateId()
+        {
+            entityInitializationEnded += User_entityInitializationEnded;
+        }
+
+        private void User_entityInitializationEnded(object sender, EventArgs e)
+        {
+            Id = EmailAddress;
         }
 
         protected override void AddProperties()
@@ -41,6 +52,7 @@ namespace Live2k.Core.Model.Base
             AddProperty("Middle name", $"Middle name of the {nameof(User)}", typeof(string));
             AddProperty("Last name", $"Last name of the {nameof(User)}", typeof(string));
             AddProperty("Birthday", $"Birthday of the {nameof(User)}", typeof(DateTime));
+            AddProperty("Email address", $"Email address of the {nameof(User)}", typeof(string));
             AddListProperty("Phone numbers", "List of phone numbers", typeof(Phone));
             AddListProperty("Addresses", "List of addresses", typeof(Address));
         }

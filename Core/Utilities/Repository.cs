@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Live2k.Core.Model;
 using Live2k.Core.Model.Base;
+using Live2k.Core.Utilities;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
@@ -12,6 +14,7 @@ namespace Live2k.MongoDb
 {
     public class Repository
     {
+        private readonly Mediator mediator;
         private readonly MongoClient _client;
         private readonly IMongoDatabase _database;
 
@@ -20,8 +23,9 @@ namespace Live2k.MongoDb
             
         }
 
-        public Repository(MongoClient client)
+        public Repository(Mediator mediator, MongoClient client)
         {
+            this.mediator = mediator;
             this._client = client;
             this._database = _client.GetDatabase("Live2K");
         }
@@ -52,13 +56,40 @@ namespace Live2k.MongoDb
 
         private void RecordHistory<T>(T node) where T : Node
         {
-            node.AddHistory();
-
             // Get history collection
             var collection = this._database.GetCollection<ChangeTracker>("History");
-            var tracker = node.GetTracker();
-            tracker.StopTracking();
-            collection.InsertOne(tracker);
+            var trackers = node.GetTrackers();
+            var trackersToRecord = new List<ChangeTracker>();
+            foreach (var tracker in trackers)
+            {
+                tracker.StopTracking();
+                if (tracker.IsChanged)
+                    trackersToRecord.Add(tracker);
+            }
+            collection.InsertMany(trackersToRecord);
+
+            // Add node history
+            node.AddHistory();
+        }
+
+        public T Get<T>(Expression<Func<T, bool>> predicate) where T: Node
+        {
+            // Get relevant collection
+            var collection = GetCollection(typeof(T)).OfType<T>();
+            var filter = Builders<T>.Filter.Where(predicate);
+            var found = collection.Find(filter).FirstOrDefault();
+            var backup = collection.Find(filter).FirstOrDefault();
+            found?.AttachTracker(mediator, found, backup);
+            return found;
+        }
+
+        public void Update<T>(T entity) where T: Node
+        {
+            RecordHistory(entity);
+
+            // Get relevant collection
+            var collection = GetCollection(typeof(T)).OfType<T>();
+            collection.FindOneAndReplace(a => a.Id == entity.Id, entity);
         }
 
         public IEnumerable<T> GetAll<T>() where T: Node

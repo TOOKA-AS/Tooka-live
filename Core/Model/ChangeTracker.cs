@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Text;
 using Live2k.Core.Model.Base;
 using Live2k.Core.Model.Basic.Commodities;
 using Live2k.Core.Utilities;
@@ -16,10 +18,10 @@ namespace Live2k.Core.Model
 
         private ChangeTracker()
         {
-
+            Changes = new List<Change>();
         }
 
-        internal ChangeTracker(Mediator mediator)
+        internal ChangeTracker(Mediator mediator) : this()
         {
             if (mediator is null)
             {
@@ -64,7 +66,16 @@ namespace Live2k.Core.Model
                 ChangeType = ChangeType.Create;
             }
             else
+            {
                 ChangeType = ChangeType.Update;
+                CurrentSnapshot.entityChangedEventHandler += CurrentSnapshot_entityChangedEventHandler;
+            }
+        }
+
+        private void CurrentSnapshot_entityChangedEventHandler(object sender, Events.EntityChangeEventArgument e)
+        {
+            _isChanged = true;
+            Changes.Add(e.Change);
         }
 
         /// <summary>
@@ -120,7 +131,37 @@ namespace Live2k.Core.Model
         /// <returns></returns>
         public string Report()
         {
-            return $"This is a track for {EntityId}";
+            switch (ChangeType)
+            {
+                case ChangeType.Create:
+                    return CreateReport();
+                case ChangeType.Update:
+                    return UpdateReport();
+                case ChangeType.Delete:
+                    return DeleteReport();
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private string CreateReport()
+        {
+            return string.Format("'{0}' has been created. \nBy {1}\nOn {2}", EntityId, UserId, SaveDate);
+        }
+
+        private string UpdateReport()
+        {
+            var report = new StringBuilder();
+            report.Append($"{EntityId} has been updated");
+            report.AppendLine($"By {UserId}");
+            report.AppendLine($"On {SaveDate}");
+            Changes.ToList().ForEach(a => report.AppendLine(a.Report()));
+            return report.ToString();
+        }
+
+        private string DeleteReport()
+        {
+            throw new NotImplementedException();
         }
     }
 }

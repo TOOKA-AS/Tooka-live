@@ -9,5 +9,10 @@ namespace Live2k.Core.Model
         /// Name of changed property
         /// </summary>
         public string Property { get; set; }
+
+        public virtual string Report()
+        {
+            return $"{Property} has been changed";
+        }
     }
 }
