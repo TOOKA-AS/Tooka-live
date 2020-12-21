@@ -34,6 +34,13 @@ namespace Live2k.Core.Model.Basic.Commodities
             
         }
 
+        protected override void GenerateLabel()
+        {
+            Label = string.Format("{0}-{1}",
+                "Revision",
+                RevisionNumber);
+        }
+
         protected override void AddProperties()
         {
             base.AddProperties();

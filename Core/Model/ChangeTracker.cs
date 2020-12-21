@@ -14,7 +14,6 @@ namespace Live2k.Core.Model
     public sealed class ChangeTracker
     {
         private bool _isTracking = false;
-        private bool _isChanged = false;
 
         private ChangeTracker()
         {
@@ -62,7 +61,6 @@ namespace Live2k.Core.Model
                 ChangeType = ChangeType.Delete;
             else if (PreviousSnapshot == null)
             {
-                _isChanged = true;
                 ChangeType = ChangeType.Create;
             }
             else
@@ -74,8 +72,20 @@ namespace Live2k.Core.Model
 
         private void CurrentSnapshot_entityChangedEventHandler(object sender, Events.EntityChangeEventArgument e)
         {
-            _isChanged = true;
-            Changes.Add(e.Change);
+            // Check if there is a change
+            if (!e.Change.HasChanged)
+                return;
+
+            // check if there is already a change registered for the property
+            var alreadyRegistered = Changes.FirstOrDefault(a => a.Equals(e.Change));
+            if (alreadyRegistered == null)
+            {
+                Changes.Add(e.Change);
+            }
+            else
+            {
+                alreadyRegistered.Update(e.Change);
+            }
         }
 
         /// <summary>
@@ -83,7 +93,18 @@ namespace Live2k.Core.Model
         /// </summary>
         internal void StopTracking()
         {
+            RemoveRedundantChanges();
             this.SaveDate = DateTime.Now;
+        }
+
+        /// <summary>
+        /// Remove change instances with not changed status
+        /// </summary>
+        private void RemoveRedundantChanges()
+        {
+            var changes = Changes.ToList();
+            if (changes.RemoveAll(a => !a.HasChanged) != 0)
+                Changes = changes;
         }
 
         /// <summary>
@@ -123,7 +144,7 @@ namespace Live2k.Core.Model
         public Entity CurrentSnapshot { get; set; }
 
         [BsonIgnore]
-        public bool IsChanged => _isChanged;
+        public bool IsChanged => ChangeType != ChangeType.Update || Changes.Any(a => a.HasChanged);
 
         /// <summary>
         /// Returns a string reporting change details
@@ -144,11 +165,19 @@ namespace Live2k.Core.Model
             }
         }
 
+        /// <summary>
+        /// Report as create
+        /// </summary>
+        /// <returns></returns>
         private string CreateReport()
         {
             return string.Format("'{0}' has been created. \nBy {1}\nOn {2}", EntityId, UserId, SaveDate);
         }
 
+        /// <summary>
+        /// Report as update
+        /// </summary>
+        /// <returns></returns>
         private string UpdateReport()
         {
             var report = new StringBuilder();
@@ -159,9 +188,13 @@ namespace Live2k.Core.Model
             return report.ToString();
         }
 
+        /// <summary>
+        /// Report as delete
+        /// </summary>
+        /// <returns></returns>
         private string DeleteReport()
         {
-            throw new NotImplementedException();
+            return string.Format("{0} has been deleted by {1} on {2}", EntityId, UserId, SaveDate);
         }
     }
 }

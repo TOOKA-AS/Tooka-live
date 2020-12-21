@@ -33,16 +33,6 @@ namespace Live2k.Core.Model.Base
         public User(string label, string emailAddress) : base(label)
         {
             EmailAddress = emailAddress;
-            InvokeInitializationEnded(typeof(User));
-        }
-
-        protected override void GenerateId()
-        {
-            entityInitializationEnded += User_entityInitializationEnded;
-        }
-
-        private void User_entityInitializationEnded(object sender, EventArgs e)
-        {
             Id = EmailAddress;
         }
 

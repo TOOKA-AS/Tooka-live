@@ -21,14 +21,17 @@ namespace PlayGround
 
         static void Main(string[] args)
         {
+            // connection to MongoDb
+            _client = new MongoClient("mongodb+srv://m001-student:m001-mongodb-basics@sandbox.aidnp.mongodb.net/temp?retryWrites=true&w=majority");
+
             // Mediator
-            var mediator = new Mediator();
             var user = new User("Designer", "faramarz.bodaghi@outlook.com");
             //user.Id = "faramarz.bodaghi@outlook.com";
             user.FirstName = "Faramarz";
             user.LastName = "Bodaghi";
             user.Birthday = new DateTime(1986, 9, 19);
-            mediator.SessionUser = user;
+
+            var mediator = new Mediator(user, new DocumentCounterReposity(_client.GetDatabase("Live2K")));
 
             //BsonSerializer.RegisterSerializationProvider(new Live2kSerializationProvider());
             BsonSerializer.RegisterDiscriminatorConvention(typeof(BaseProperty), new BasePropertyDiscriminator());
@@ -67,8 +70,7 @@ namespace PlayGround
             //BsonClassMap.RegisterClassMap<Property<double>>();
 
 
-            // connection to MongoDb
-            _client = new MongoClient("mongodb+srv://m001-student:m001-mongodb-basics@sandbox.aidnp.mongodb.net/temp?retryWrites=true&w=majority");
+            
 
 
             //// TEST
@@ -89,9 +91,14 @@ namespace PlayGround
 
             // Get sdi
             var tempRepos = new Repository(mediator, _client);
-            var foundSdi = tempRepos.Get<SDI>(a => a.Label == "SDI");
-            foundSdi.Description = "Aram is observing";
-            foundSdi.Revisions.FirstOrDefault().Description = "We are adding a desc here";
+            var foundSdi = tempRepos.Get<SDI>(a => a.Label == "SDI-1");
+            //foundSdi.Description = "Aram is observing";
+            //foundSdi.Description = "Aram is not observing";
+            //foundSdi.Revisions.FirstOrDefault().Description = "We are adding a desc here";
+            //foundSdi.DataCode = "Changed";
+            var revision2 = foundSdi.Revise(mediator).Cast<SdiRevision>();
+            revision2.NumberOfDocs = 20;
+            revision2.Tags.Add("new rev");
             tempRepos.Update(foundSdi);
 
             //var number = founditem.CountDocuments();
@@ -109,14 +116,14 @@ namespace PlayGround
 
             //Test1();
 
-            
+
 
 
             // make an SDI
             var sdi = new SDI(mediator);
             //sdi.Id = Guid.NewGuid().ToString();
             sdi.DataCode = "SDI-222-11-01";
-            sdi.Section = "222";
+            sdi.Section = "2222";
 
             var xx = sdi.Revisions;
 
@@ -124,7 +131,7 @@ namespace PlayGround
             var revision = sdi.Revise(mediator).Cast<SdiRevision>();
             //revision.Id = Guid.NewGuid().ToString();
             revision.NumberOfDocs = 20;
-            revision.Tags.Add("ssss");
+            revision.Tags.Add("dddd");
             var y = sdi["Revisions"];
             var x = sdi.Revisions;
 
@@ -137,21 +144,21 @@ namespace PlayGround
             co.ControlObjectCode = "222-11-0001";
             co.Status = "A2";
 
-            // Relationship to SDI
+            //// Relationship to SDI
             var rel = new ReferenceRelationship();
             //rel.Id = Guid.NewGuid().ToString();
             rel.SetNodes(co, sdi);
 
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.TypeNameHandling = TypeNameHandling.Auto;
-            using (var writer = new StreamWriter("TestSDI.json"))
-            using (var coWriter = new StreamWriter("TestCo.json"))
-            using (var relWriter = new StreamWriter("TestRel.json"))
-            {
-                serializer.Serialize(writer, sdi);
-                serializer.Serialize(coWriter, co);
-                serializer.Serialize(relWriter, rel);
-            }
+            //JsonSerializer serializer = new JsonSerializer();
+            //serializer.TypeNameHandling = TypeNameHandling.Auto;
+            //using (var writer = new StreamWriter("TestSDI.json"))
+            //using (var coWriter = new StreamWriter("TestCo.json"))
+            //using (var relWriter = new StreamWriter("TestRel.json"))
+            //{
+            //    serializer.Serialize(writer, sdi);
+            //    serializer.Serialize(coWriter, co);
+            //    serializer.Serialize(relWriter, rel);
+            //}
 
             var repos = new Repository(mediator, _client);
             repos.Add(sdi);

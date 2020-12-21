@@ -14,6 +14,7 @@ namespace Live2k.MongoDb
 {
     public class Repository
     {
+        public static event EventHandler<Entity> NewEntityAdded;
         private readonly Mediator mediator;
         private readonly MongoClient _client;
         private readonly IMongoDatabase _database;
@@ -42,6 +43,7 @@ namespace Live2k.MongoDb
             var collection = GetCollection(node);
 
             collection.InsertOne(node);
+            NewEntityAdded?.Invoke(this, node);
         }
 
         public void AddEntity<T>(T entity) where T: Entity
@@ -66,7 +68,9 @@ namespace Live2k.MongoDb
                 if (tracker.IsChanged)
                     trackersToRecord.Add(tracker);
             }
-            collection.InsertMany(trackersToRecord);
+
+            if (trackersToRecord.Count != 0)
+                collection.InsertMany(trackersToRecord);
 
             // Add node history
             node.AddHistory();
@@ -89,7 +93,7 @@ namespace Live2k.MongoDb
 
             // Get relevant collection
             var collection = GetCollection(typeof(T)).OfType<T>();
-            collection.FindOneAndReplace(a => a.Id == entity.Id, entity);
+            collection.FindOneAndReplace(a => a.Label == entity.Label, entity);
         }
 
         public IEnumerable<T> GetAll<T>() where T: Node

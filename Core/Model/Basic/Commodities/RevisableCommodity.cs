@@ -96,7 +96,7 @@ namespace Live2k.Core.Model.Basic.Commodities
             var revision = constructor.Invoke(new object[] { mediator }) as RevisionCommodity ??
                 throw new InvalidOperationException($"Could not make an instance of {revisionType} and cast to {typeof(RevisionCommodity)}");
             revision.RevisionNumber = ++RevisionsCount;
-            AddToListProperty(nameof(Revisions), "Revisions", revision);
+            AddToListProperty(nameof(Revisions), $"Revision {revision.RevisionNumber}", revision);
             return revision;
         }
     }

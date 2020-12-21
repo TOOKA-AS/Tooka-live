@@ -15,10 +15,19 @@ namespace Live2k.Core.Model
         /// </summary>
         public object CurrentValue { get; set; }
 
+        public override bool HasChanged => CurrentValue == null ||
+                                           PrevisousValue == null ||
+                                           !PrevisousValue.Equals(CurrentValue);
+
         public override string Report()
         {
             var fromBase =  base.Report();
             return string.Format("{0}\n\tOld value: {1}\n\tNew value: {2}", fromBase, PrevisousValue, CurrentValue);
+        }
+
+        internal override void Update(Change change)
+        {
+            CurrentValue = (change as PropertyChange).CurrentValue;
         }
     }
 }
