@@ -30,7 +30,6 @@ namespace Live2k.Core.Model
             }
 
             user = mediator.SessionUser;
-            UserId = mediator.SessionUser.Id;
         }
 
         /// <summary>
@@ -38,14 +37,14 @@ namespace Live2k.Core.Model
         /// </summary>
         /// <param name="current"></param>
         /// <param name="previous"></param>
-        public void Track(Entity current, Entity previous)
+        public void Track(Node current, Node previous)
         {
             if (this._isTracking)
-                throw new InvalidOperationException($"Already tracking: {EntityId}");
+                throw new InvalidOperationException($"Already tracking: {Node.NodeId}");
 
-            EntityId = current != null ?
-                current.Id :
-                previous?.Id ?? throw new ArgumentNullException("Current and previous cannot be null at same time");
+            Node = current != null ? new NodeFootPrint(current) :
+                   previous != null ? new NodeFootPrint(previous) :
+                   throw new ArgumentNullException("Current and previous cannot be null at same time");
 
             CurrentSnapshot = current;
             PreviousSnapshot = previous;
@@ -97,7 +96,7 @@ namespace Live2k.Core.Model
         internal void StopTracking()
         {
             RemoveRedundantChanges();
-            this.SaveDate = DateTime.Now;
+            Signature = new UserSignature(this.user);
         }
 
         /// <summary>
@@ -116,19 +115,14 @@ namespace Live2k.Core.Model
         public string Id { get; set; }
 
         /// <summary>
-        /// ID of the tracked entity
+        /// Footprint of the tracked Node
         /// </summary>
-        public string EntityId { get; set; }
+        public NodeFootPrint Node { get; set; }
 
         /// <summary>
-        /// Time when the changed has occured
+        /// Signature of the user
         /// </summary>
-        public DateTime SaveDate { get; set; }
-
-        /// <summary>
-        /// User who have done the change
-        /// </summary>
-        public string UserId { get; set; }
+        public UserSignature Signature { get; set; }
 
         /// <summary>
         /// Type of the change
@@ -179,7 +173,7 @@ namespace Live2k.Core.Model
         /// <returns></returns>
         private string CreateReport()
         {
-            return string.Format("'{0}' has been created. \nBy {1}\nOn {2}", EntityId, UserId, SaveDate);
+            return string.Format("'{0}' has been created. \nBy {1}\nOn {2}", Node.NodeId, Signature.UserId, Signature.SignedOn);
         }
 
         /// <summary>
@@ -189,9 +183,9 @@ namespace Live2k.Core.Model
         private string UpdateReport()
         {
             var report = new StringBuilder();
-            report.Append($"{EntityId} has been updated");
-            report.AppendLine($"By {UserId}");
-            report.AppendLine($"On {SaveDate}");
+            report.Append($"{Node.NodeId} has been updated");
+            report.AppendLine($"By {Signature.UserId}");
+            report.AppendLine($"On {Signature.SignedOn}");
             Changes.ToList().ForEach(a => report.AppendLine(a.Report()));
             return report.ToString();
         }
@@ -202,7 +196,7 @@ namespace Live2k.Core.Model
         /// <returns></returns>
         private string DeleteReport()
         {
-            return string.Format("{0} has been deleted by {1} on {2}", EntityId, UserId, SaveDate);
+            return string.Format("{0} has been deleted by {1} on {2}", Node.NodeId, Signature.UserId, Signature.SignedOn);
         }
     }
 }

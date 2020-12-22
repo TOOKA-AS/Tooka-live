@@ -32,15 +32,30 @@ namespace Live2k.Core.Model.Basic.Commodities
 
         protected override void GenerateLabel()
         {
-            Label = string.Format("{0}-{1}",
-                "Revision",
+            Label = string.Format("{0}_Rev.{1}",
+                OwnerLabel,
                 RevisionNumber);
         }
 
         protected override void AddProperties()
         {
             base.AddProperties();
+            AddProperty(nameof(OwnerLabel), "Owner label", typeof(string));
             AddProperty(nameof(RevisionNumber), "Revision number", typeof(int));
+        }
+
+        [JsonIgnore, BsonIgnore]
+        public string OwnerLabel
+        {
+            get
+            {
+                return (string)this[nameof(OwnerLabel)];
+            }
+
+            set
+            {
+                this[nameof(OwnerLabel)] = value;
+            }
         }
 
         [JsonIgnore, BsonIgnore]

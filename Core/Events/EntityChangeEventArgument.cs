@@ -14,16 +14,16 @@ namespace Live2k.Core.Events
             Change = new PropertyChange() { Property = propName, PrevisousValue = previousValue, CurrentValue = currentValue };
         }
 
-        public EntityChangeEventArgument(string propName, object item, EntityListPropertyChangeTypeEnum type)
+        public EntityChangeEventArgument(string propName, EntityListPropertyChangeTypeEnum type, params object[] items)
         {
             if (string.IsNullOrWhiteSpace(propName))
             {
                 throw new ArgumentException($"'{nameof(propName)}' cannot be null or whitespace", nameof(propName));
             }
 
-            if (item is null)
+            if (items is null || items.Length == 0)
             {
-                throw new ArgumentNullException(nameof(item));
+                throw new ArgumentNullException(nameof(items));
             }
 
             var change = new ListPropertyChange()
@@ -34,13 +34,13 @@ namespace Live2k.Core.Events
             switch (type)
             {
                 case EntityListPropertyChangeTypeEnum.Add:
-                    change.AddedItems.Add(item);
+                    (change.AddedItems as List<object>).AddRange(items);
                     break;
                 case EntityListPropertyChangeTypeEnum.Remove:
-                    change.RemovedItems.Add(item);
+                    (change.RemovedItems as List<object>).AddRange(items);
                     break;
                 case EntityListPropertyChangeTypeEnum.Update:
-                    change.UpdatedItems.Add(item);
+                    (change.UpdatedItems as List<object>).AddRange(items);
                     break;
                 default:
                     throw new InvalidOperationException("Not defined or not recognized type");

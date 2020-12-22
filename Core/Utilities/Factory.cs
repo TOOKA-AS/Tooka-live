@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Live2k.Core.Model.Base;
+using Live2k.Core.Model.Basic.Commodities;
 
 namespace Live2k.Core.Utilities
 {
@@ -23,6 +24,15 @@ namespace Live2k.Core.Utilities
                 instance[prop.Item1] = prop.Item2;
             }
             CallArgumentLessMethod(instance, "GenerateLabel");
+
+            // if instance is a RevisableCommodity, call Revise method
+            if (instance is RevisableCommodity)
+                (instance as RevisableCommodity).Revise(this);
+
+            // if instance is a node, call AttachTracker method
+            if (instance is Node)
+                (instance as Node).AttachTracker(this.mediator, instance as Node, null);
+
             return instance;
         }
 

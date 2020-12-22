@@ -73,7 +73,7 @@ namespace PlayGround
             var factory = new Factory(mediator);
 
             AddNewObjects(mediator, factory);
-
+            GetFirstSDIAndChange(mediator, factory);
 
             //// TEST
 
@@ -168,12 +168,23 @@ namespace PlayGround
             //repos.AddEntity(rel);
         }
 
+        private static void GetFirstSDIAndChange(Mediator mediator, Factory factory)
+        {
+            var repos = new Repository(mediator, _client);
+            var sdi = repos.Get<SDI>(a => a.Label == "SDI-8");
+            sdi.AddTag("Tag1", "Tag2", "Tag3");
+            sdi.Revise(factory);
+            sdi.RemoveTag("Tag1", "Tag2");
+            sdi.AddTag("Hello");
+            repos.Update(sdi);
+        }
+
         private static void AddNewObjects(Mediator mediator, Factory factory)
         {
             // new SDI
             var sdi = factory.CreateNew<SDI>(null, "First sdi", new Tuple<string, object>("DataCode", "SDI-222-20-01"),
                                                                 new Tuple<string, object>("Section", "222"));
-
+            
             // add properties to active revision
             sdi.ActiveRevision.NumberOfDocs = 20;
             sdi.ActiveRevision.Description = "New Sdi revision";

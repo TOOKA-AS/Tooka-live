@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Live2k.Core.Model
@@ -46,6 +47,15 @@ namespace Live2k.Core.Model
                 builder.AppendLine($"\t*\t{item}");
             }
             return builder.ToString();
+        }
+
+        internal override void Update(Change change)
+        {
+            var _change = change as ListPropertyChange;
+            var newAddList = new List<object>(AddedItems.Except(_change.RemovedItems).Concat(_change.AddedItems.Except(RemovedItems).Except(AddedItems)));
+            var newRemoveList = new List<object>(RemovedItems.Except(_change.AddedItems).Concat(_change.RemovedItems.Except(AddedItems).Except(RemovedItems)));
+            AddedItems = newAddList;
+            RemovedItems = newRemoveList;
         }
     }
 }

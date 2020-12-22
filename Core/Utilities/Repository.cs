@@ -69,11 +69,11 @@ namespace Live2k.MongoDb
                     trackersToRecord.Add(tracker);
             }
 
-            if (trackersToRecord.Count != 0)
-                collection.InsertMany(trackersToRecord);
-
             // Add node history
             node.AddHistory();
+
+            if (trackersToRecord.Count != 0)
+                collection.InsertMany(trackersToRecord);
         }
 
         public T Get<T>(Expression<Func<T, bool>> predicate) where T: Node

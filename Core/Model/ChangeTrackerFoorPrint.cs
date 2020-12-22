@@ -1,4 +1,5 @@
 ﻿using System;
+using Live2k.Core.Model.Base;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Live2k.Core.Model
@@ -13,9 +14,7 @@ namespace Live2k.Core.Model
         {
             ChangeId = tracker.Id;
             ChangeType = tracker.ChangeType;
-            UserId = tracker.user.Id;
-            UserFullName = tracker.user.FullName;
-            ChangedOn = tracker.SaveDate;
+            Signature = tracker.Signature;
             ChangeBody = tracker.Report();
         }
 
@@ -31,19 +30,9 @@ namespace Live2k.Core.Model
         public ChangeType ChangeType { get; set; }
 
         /// <summary>
-        /// Id of the user 
+        /// Signature of the user
         /// </summary>
-        public string UserId { get; set; }
-
-        /// <summary>
-        /// Full name of the user
-        /// </summary>
-        public string UserFullName { get; set; }
-
-        /// <summary>
-        /// DateTime indication when changes has been done
-        /// </summary>
-        public DateTime ChangedOn { get; set; }
+        public UserSignature Signature { get; set; }
 
         /// <summary>
         /// Detail of the changes

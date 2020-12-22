@@ -26,7 +26,7 @@ namespace Live2k.Core.Model.Basic.Commodities
         /// </summary>
         public RevisableCommodity(Mediator mediator, Factory factory) : base(mediator)
         {
-            Revise(factory);
+
         }
 
         protected override void AddProperties()
@@ -91,7 +91,8 @@ namespace Live2k.Core.Model.Basic.Commodities
             var genericCreateMethod = createMethod.MakeGenericMethod(revisionType);
             var revision = genericCreateMethod.Invoke(factory,
                 new object[] { null, null, new Tuple<string, object>[]
-                { new Tuple<string, object>("RevisionNumber", ++RevisionsCount) } }) as RevisionCommodity;
+                { new Tuple<string, object>("RevisionNumber", ++RevisionsCount),
+                  new Tuple<string, object>("OwnerLabel", Label) } }) as RevisionCommodity;
 
             AddToListProperty(nameof(Revisions), revision);
             return revision;
