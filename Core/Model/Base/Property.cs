@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Linq;
 
-namespace Live2k.Core.Abstraction
+namespace Live2k.Core.Model.Base
 {
     /// <summary>
     /// Generic property

@@ -1,7 +1,8 @@
 ﻿using System;
+using Live2k.Core.Utilities;
 using Newtonsoft.Json;
 
-namespace Live2k.Core.Abstraction
+namespace Live2k.Core.Model.Base
 {
     /// <summary>
     /// Represents the relationship between nodes
@@ -13,7 +14,7 @@ namespace Live2k.Core.Abstraction
         /// </summary>
         /// <param name="temp"></param>
         [JsonConstructor]
-        protected Relationship(object temp) : base(temp)
+        protected Relationship(Guid temp) : base(temp)
         {
 
         }
@@ -21,12 +22,7 @@ namespace Live2k.Core.Abstraction
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        private Relationship() : base(nameof(Relationship))
-        {
-
-        }
-
-        protected Relationship(string label) : base(label)
+        protected Relationship() : base()
         {
 
         }

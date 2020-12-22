@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Live2k.Core.Abstraction
+namespace Live2k.Core.Model.Base
 {
     /// <summary>
     /// Property associated with an <see cref="Entity">Entity</see>

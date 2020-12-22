@@ -2,19 +2,19 @@
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace Live2k.Core.Abstraction
+namespace Live2k.Core.Model.Base
 {
-    public class InRelationshipFootPrint
+    public class OutRelationshipFootPrint
     {
         [JsonIgnore, BsonIgnore]
         private Relationship _relationship;
 
-        private InRelationshipFootPrint()
+        private OutRelationshipFootPrint()
         {
 
         }
 
-        public InRelationshipFootPrint(Relationship relationship) : this()
+        public OutRelationshipFootPrint(Relationship relationship) : this()
         {
             this._relationship = relationship ?? throw new ArgumentNullException(nameof(relationship));
             Id = relationship.Id ?? throw new ArgumentException($"Relationship is corrupted, {nameof(relationship.Id)} cannot be null");

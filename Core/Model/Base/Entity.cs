@@ -4,22 +4,32 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using Live2k.Core.Events;
+using Live2k.Core.Utilities;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace Live2k.Core.Abstraction
+namespace Live2k.Core.Model.Base
 {
     /// <summary>
     /// Everything in Live2k is an entity at very high level
     /// </summary>
     public class Entity : IValidatableObject
     {
+        private string label;
+        private string description;
+        private bool listPropertyUpdateInProgress = false;
+        protected readonly Mediator mediator;
+
+        internal event EventHandler<EntityChangeEventArgument> entityChangedEventHandler;
+
         /// <summary>
         /// Constructor to be used by JSON/BSON deserializer
         /// </summary>
         /// <param name="temp"></param>
         [JsonConstructor]
-        protected Entity(object temp)
+        protected Entity(Guid temp)
         {
 
         }
@@ -27,30 +37,28 @@ namespace Live2k.Core.Abstraction
         /// <summary>
         /// Constructor which initializes list objects and adds properties
         /// </summary>
-        private Entity()
+        protected Entity()
         {
+            Id = Guid.NewGuid().ToString();
             ActualType = GetType().FullName;
             InitializeListObjects();
             AddProperties();
-            GenerateId();
         }
 
-        /// <summary>
-        /// Default constructor to be used to initialize objecr
-        /// </summary>
-        /// <param name="label"></param>
-        protected Entity(string label) : this()
+        protected Entity(Mediator mediator) : this()
         {
-            Label = label;
+            this.mediator = mediator;
         }
 
         /// <summary>
         /// Method to generate unique ID
         /// <p>By default GUID is used</p>
         /// </summary>
-        protected virtual void GenerateId()
+        protected virtual void GenerateLabel()
         {
-            Id = Guid.NewGuid().ToString();
+            Label = string.Format("{0}-{1}",
+                string.IsNullOrWhiteSpace(Label) ? GetType().Name : Label,
+                mediator.CounterReposity.Count(GetType()) + 1);
         }
 
         /// <summary>
@@ -70,35 +78,53 @@ namespace Live2k.Core.Abstraction
 
         }
 
-        public string ActualType { get; private set; }
+        /// <summary>
+        /// Actual type of the entity
+        /// </summary>
+        public string ActualType { get; protected set; }
 
         /// <summary>
         /// Unique ID associated with the entity
         /// </summary>
         [Required]
-        public string Id { get; set; }
+        public string Id { get; protected set; }
 
         /// <summary>
         /// Label of the entity (Type)
         /// </summary>
         [Required]
-        public string Label { get; set; }
+        public string Label
+        {
+            get => label;
+            set
+            {
+                entityChangedEventHandler?.Invoke(this, new EntityChangeEventArgument(nameof(Label), this.label, value));
+                this.label = value;
+            }
+        }
 
         /// <summary>
         /// Description of the current instance
         /// </summary>
-        public string Description { get; set; }
+        public string Description
+        {
+            get => description;
+            set
+            {
+                entityChangedEventHandler?.Invoke(this, new EntityChangeEventArgument(nameof(Description), this.description, value));
+                this.description = value;
+            }
+        }
 
         /// <summary>
         /// List of associated labels
         /// </summary>
-        public ICollection<string> Tags { get; set; }
+        public IReadOnlyCollection<string> Tags { get; protected set; }
 
         /// <summary>
         /// List of all properties
         /// </summary>
-        public ICollection<BaseProperty> Properties { get; set; }
-
+        public IReadOnlyCollection<BaseProperty> Properties { get; protected set; }
 
         /// <summary>
         /// Indexer to get or set properties based on the given key
@@ -116,8 +142,32 @@ namespace Live2k.Core.Abstraction
             set
             {
                 var prop = GetProperty(propertyTitle) ?? throw new IndexOutOfRangeException($"No property is defined as {propertyTitle}");
+                if (!listPropertyUpdateInProgress)
+                    entityChangedEventHandler?.Invoke(this, new EntityChangeEventArgument(propertyTitle, prop.GetValue(), value));
                 prop.SetValue(value);
             }
+        }
+
+        /// <summary>
+        /// Add a new tag
+        /// </summary>
+        /// <param name="tag"></param>
+        public void AddTag(params string[] tags)
+        {
+            Tags = new List<string>(Tags.Concat(tags));
+            entityChangedEventHandler?.Invoke(this,
+                new EntityChangeEventArgument(nameof(Tags), EntityListPropertyChangeTypeEnum.Add, tags));
+        }
+
+        /// <summary>
+        /// Remove a tag
+        /// </summary>
+        /// <param name="tag"></param>
+        public void RemoveTag(params string[] tags)
+        {
+            Tags = new List<string>(Tags.Except(tags));
+            entityChangedEventHandler?.Invoke(this,
+                new EntityChangeEventArgument(nameof(Tags), EntityListPropertyChangeTypeEnum.Remove, tags));
         }
 
         /// <summary>
@@ -178,7 +228,7 @@ namespace Live2k.Core.Abstraction
             if (HasProperty(property.Title))
                 throw new InvalidOperationException($"{this} has already a property with title {property.Title}");
 
-            Properties.Add(property);
+            Properties = new List<BaseProperty>(Properties.Append(property));
         }
 
         /// <summary>
@@ -238,29 +288,21 @@ namespace Live2k.Core.Abstraction
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="listPropTitle"></param>
-        /// <param name="tag"></param>
+        /// <param name="label"></param>
         /// <param name="value"></param>
-        public virtual void AddToListProperty<T>(string listPropTitle, string tag, T value) where T: Entity
+        public virtual void AddToListProperty<T>(string listPropTitle, T value) where T : Entity
         {
             if (string.IsNullOrWhiteSpace(listPropTitle))
             {
                 throw new ArgumentException($"'{nameof(listPropTitle)}' cannot be null or whitespace", nameof(listPropTitle));
             }
 
-            if (string.IsNullOrEmpty(tag))
-            {
-                throw new ArgumentException($"'{nameof(tag)}' cannot be null or empty", nameof(tag));
-            }
-
-            // Check if value has the tag or assign it
-            if (!value.Tags.Contains(tag))
-                value.Tags.Add(tag);
-
             // Get the list property
             var prop = (ICollection<T>)this[listPropTitle] ?? new List<T>();
 
-            // find a value with same tag
-            var val = GetFromListProperty<T>(listPropTitle, tag);
+            // find a value with same label
+            var val = GetFromListProperty<T>(listPropTitle, value.Label);
+            var changeType = val == null ? EntityListPropertyChangeTypeEnum.Add : EntityListPropertyChangeTypeEnum.Update;
 
             if (val == null)
             {
@@ -272,7 +314,14 @@ namespace Live2k.Core.Abstraction
                 prop.Add(value);
             }
 
+            entityChangedEventHandler?.Invoke(this, new EntityChangeEventArgument(listPropTitle, changeType, value));
+
+            // flag list property update
+            listPropertyUpdateInProgress = true;
+
             this[listPropTitle] = prop;
+
+            listPropertyUpdateInProgress = false;
         }
 
         /// <summary>
@@ -280,11 +329,11 @@ namespace Live2k.Core.Abstraction
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="listPropTitle"></param>
-        /// <param name="tag"></param>
+        /// <param name="label"></param>
         /// <returns></returns>
-        public virtual T GetFromListProperty<T>(string listPropTitle, string tag) where T: Entity
+        public virtual T GetFromListProperty<T>(string listPropTitle, string label) where T : Entity
         {
-            return ((ICollection<T>)this[listPropTitle] ?? new List<T>()).FirstOrDefault(a => a.Tags.Contains(tag));
+            return ((ICollection<T>)this[listPropTitle] ?? new List<T>()).FirstOrDefault(a => a.Label == label);
         }
 
         /// <summary>
@@ -340,18 +389,6 @@ namespace Live2k.Core.Abstraction
         private IEnumerable<PropertyInfo> GetAllProperties()
         {
             return GetType().GetProperties();
-        }
-
-        public T Cast<T>() where T: Entity, new()
-        {
-            var obj = new T();
-            obj.Id = Id;
-            obj.Label = Label;
-            obj.Description = Description;
-            obj.Tags = Tags;
-            obj.Properties = Properties;
-
-            return obj;
         }
     }
 }

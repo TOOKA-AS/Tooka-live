@@ -2,7 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace Live2k.Core.Abstraction
+namespace Live2k.Core.Model.Base
 {
     public class NodeFootPrint
     {
