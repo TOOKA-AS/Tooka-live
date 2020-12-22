@@ -17,7 +17,7 @@ namespace Live2k.Core.Model.Basic.Commodities
         /// </summary>
         /// <param name="temp"></param>
         [JsonConstructor]
-        protected RevisionCommodity(object temp) : base(temp)
+        protected RevisionCommodity(Guid temp) : base(temp)
         {
 
         }
@@ -25,13 +25,9 @@ namespace Live2k.Core.Model.Basic.Commodities
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public RevisionCommodity(Mediator mediator) : base(mediator, nameof(RevisionCommodity))
+        public RevisionCommodity(Mediator mediator) : base(mediator)
         {
-        }
 
-        protected RevisionCommodity(Mediator mediator, string label) : base(mediator, label)
-        {
-            
         }
 
         protected override void GenerateLabel()

@@ -14,9 +14,11 @@ namespace Live2k.Core.Model
     public sealed class ChangeTracker
     {
         private bool _isTracking = false;
+        public readonly User user;
 
         private ChangeTracker()
         {
+            Id = Guid.NewGuid().ToString();
             Changes = new List<Change>();
         }
 
@@ -27,6 +29,7 @@ namespace Live2k.Core.Model
                 throw new ArgumentNullException(nameof(mediator));
             }
 
+            user = mediator.SessionUser;
             UserId = mediator.SessionUser.Id;
         }
 
@@ -106,6 +109,11 @@ namespace Live2k.Core.Model
             if (changes.RemoveAll(a => !a.HasChanged) != 0)
                 Changes = changes;
         }
+
+        /// <summary>
+        /// Identification of the change history
+        /// </summary>
+        public string Id { get; set; }
 
         /// <summary>
         /// ID of the tracked entity

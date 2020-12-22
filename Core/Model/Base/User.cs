@@ -17,7 +17,7 @@ namespace Live2k.Core.Model.Base
         /// </summary>
         /// <param name="temp"></param>
         [JsonConstructor]
-        protected User(object temp) : base(temp)
+        protected User(Guid temp) : base(temp)
         {
 
         }
@@ -25,15 +25,20 @@ namespace Live2k.Core.Model.Base
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        protected User() : base(nameof(User))
+        protected User() : base()
         {
 
         }
 
-        public User(string label, string emailAddress) : base(label)
+        public User(string emailAddress) : base()
         {
             EmailAddress = emailAddress;
             Id = EmailAddress;
+        }
+
+        protected override void GenerateLabel()
+        {
+
         }
 
         protected override void AddProperties()
@@ -168,7 +173,7 @@ namespace Live2k.Core.Model.Base
 
             set
             {
-                AddToListProperty("Addresses", "Home address", value);
+                AddToListProperty("Addresses", value);
             }
         }
 
@@ -182,7 +187,7 @@ namespace Live2k.Core.Model.Base
 
             set
             {
-                AddToListProperty("Addresses", "Shipping address", value);
+                AddToListProperty("Addresses", value);
             }
         }
 
@@ -198,7 +203,7 @@ namespace Live2k.Core.Model.Base
 
             set
             {
-                AddToListProperty("Phone numbers", "Mobile number", value);
+                AddToListProperty("Phone numbers", value);
             }
         }
     }

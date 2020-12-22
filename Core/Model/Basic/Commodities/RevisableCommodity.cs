@@ -16,7 +16,7 @@ namespace Live2k.Core.Model.Basic.Commodities
         /// </summary>
         /// <param name="temp"></param>
         [JsonConstructor]
-        protected RevisableCommodity(object temp) : base(temp)
+        protected RevisableCommodity(Guid temp) : base(temp)
         {
 
         }
@@ -24,13 +24,9 @@ namespace Live2k.Core.Model.Basic.Commodities
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public RevisableCommodity(Mediator mediator) : base(mediator, nameof(RevisableCommodity))
+        public RevisableCommodity(Mediator mediator, Factory factory) : base(mediator)
         {
-        }
-
-        protected RevisableCommodity(Mediator mediator, string label) : base(mediator, label)
-        {
-            
+            Revise(factory);
         }
 
         protected override void AddProperties()
@@ -72,13 +68,13 @@ namespace Live2k.Core.Model.Basic.Commodities
         /// Make a new revision of the entity based on the defined revision type
         /// </summary>
         /// <returns></returns>
-        public virtual RevisionCommodity Revise(Mediator mediator)
+        public virtual RevisionCommodity Revise(Factory factory)
         {
             // find relevant revision type
             var custromAttribute = Attribute.GetCustomAttribute(GetType(), typeof(RevisionTypeAttribute)) ??
                 throw new InvalidOperationException($"No revision type found for {GetType()}");
             var revisionType = (custromAttribute as RevisionTypeAttribute).RevisionType;
-            return Revise(mediator, revisionType);
+            return Revise(factory, revisionType);
         }
 
         /// <summary>
@@ -86,17 +82,18 @@ namespace Live2k.Core.Model.Basic.Commodities
         /// </summary>
         /// <param name="revisionType"></param>
         /// <returns></returns>
-        private RevisionCommodity Revise(Mediator mediator, Type revisionType)
+        private RevisionCommodity Revise(Factory factory, Type revisionType)
         {
-            var constructor = revisionType.GetConstructor(new Type[] { mediator.GetType() });
+            var createMethod = factory.GetType().GetMethod("CreateNew", 1,
+                new Type[] { typeof(string), typeof(string), typeof(Tuple<string, object>[]) }) ??
+                throw new InvalidOperationException($"Could not find proper create methos in {factory.GetType()}");
 
-            if (constructor == null)
-                throw new InvalidOperationException($"Could not find proper constructor on {revisionType}");
+            var genericCreateMethod = createMethod.MakeGenericMethod(revisionType);
+            var revision = genericCreateMethod.Invoke(factory,
+                new object[] { null, null, new Tuple<string, object>[]
+                { new Tuple<string, object>("RevisionNumber", ++RevisionsCount) } }) as RevisionCommodity;
 
-            var revision = constructor.Invoke(new object[] { mediator }) as RevisionCommodity ??
-                throw new InvalidOperationException($"Could not make an instance of {revisionType} and cast to {typeof(RevisionCommodity)}");
-            revision.RevisionNumber = ++RevisionsCount;
-            AddToListProperty(nameof(Revisions), $"Revision {revision.RevisionNumber}", revision);
+            AddToListProperty(nameof(Revisions), revision);
             return revision;
         }
     }

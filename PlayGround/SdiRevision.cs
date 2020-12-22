@@ -14,12 +14,12 @@ namespace PlayGround
         }
 
         [JsonConstructor]
-        private SdiRevision(object temp) : base(temp)
+        private SdiRevision(Guid temp) : base(temp)
         {
 
         }
 
-        public SdiRevision(Mediator mediator) : base(mediator, nameof(SdiRevision))
+        public SdiRevision(Mediator mediator) : base(mediator)
         {
 
         }

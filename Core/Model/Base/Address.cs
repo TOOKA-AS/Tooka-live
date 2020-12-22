@@ -12,7 +12,7 @@ namespace Live2k.Core.Model.Base
         /// </summary>
         /// <param name="temp"></param>
         [JsonConstructor]
-        protected Address(object temp) : base(temp)
+        protected Address(Guid temp) : base(temp)
         {
 
         }
@@ -20,12 +20,7 @@ namespace Live2k.Core.Model.Base
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public Address() : base(nameof(Address))
-        {
-
-        }
-
-        protected Address(string label) : base(label)
+        public Address() : base()
         {
 
         }

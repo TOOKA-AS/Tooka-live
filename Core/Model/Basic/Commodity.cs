@@ -22,7 +22,7 @@ namespace Live2k.Core.Model.Basic
         /// </summary>
         /// <param name="temp"></param>
         [JsonConstructor]
-        protected Commodity(object temp) : base(temp)
+        protected Commodity(Guid temp) : base(temp)
         {
 
         }
@@ -30,12 +30,7 @@ namespace Live2k.Core.Model.Basic
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public Commodity(Mediator mediator) : base(mediator, nameof(Commodity))
-        {
-
-        }
-
-        protected Commodity(Mediator mediator, string label) : base(mediator, label)
+        public Commodity(Mediator mediator) : base(mediator)
         {
 
         }

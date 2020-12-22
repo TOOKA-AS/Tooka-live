@@ -12,7 +12,7 @@ namespace Live2k.Core.Model.Basic.Relationships
         /// </summary>
         /// <param name="temp"></param>
         [JsonConstructor]
-        protected DependencyRelationship(object temp) : base(temp)
+        protected DependencyRelationship(Guid temp) : base(temp)
         {
 
         }
@@ -20,12 +20,7 @@ namespace Live2k.Core.Model.Basic.Relationships
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public DependencyRelationship() : base(nameof(DependencyRelationship))
-        {
-
-        }
-
-        protected DependencyRelationship(string label) : base(label)
+        public DependencyRelationship() : base()
         {
 
         }

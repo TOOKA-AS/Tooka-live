@@ -10,13 +10,14 @@ namespace PlayGround
     public class ControlObject : Commodity
     {
         [JsonConstructor]
-        private ControlObject(object temp) : base(temp)
+        private ControlObject(Guid temp) : base(temp)
         {
 
         }
 
-        public ControlObject(Mediator mediator) : base(mediator, nameof(ControlObject))
+        public ControlObject(Mediator mediator) : base(mediator)
         {
+
         }
 
         protected override void AddProperties()

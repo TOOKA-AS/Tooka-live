@@ -20,7 +20,7 @@ namespace Live2k.Core.Model.Basic
         /// </summary>
         /// <param name="temp"></param>
         [JsonConstructor]
-        protected Assignment(object temp) : base(temp)
+        protected Assignment(Guid temp) : base(temp)
         {
 
         }
@@ -28,12 +28,7 @@ namespace Live2k.Core.Model.Basic
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public Assignment(Mediator mediator) : base(mediator, nameof(Assignment))
-        {
-
-        }
-
-        protected Assignment(Mediator mediator, string label) : base(mediator, label)
+        public Assignment(Mediator mediator) : base(mediator)
         {
 
         }

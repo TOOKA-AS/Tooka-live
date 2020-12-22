@@ -5,6 +5,7 @@ using Live2k.Core.Attributes;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Live2k.Core.Utilities;
+using System.Linq;
 
 namespace PlayGround
 {
@@ -12,13 +13,14 @@ namespace PlayGround
     public sealed class SDI : RevisableCommodity
     {
         [JsonConstructor]
-        private SDI(object temp) : base(temp)
+        private SDI(Guid temp) : base(temp)
         {
 
         }
 
-        public SDI(Mediator mediator) : base(mediator, nameof(SDI))
+        public SDI(Mediator mediator, Factory factory) : base(mediator, factory)
         {
+
         }
 
         protected override void AddProperties()
@@ -56,5 +58,8 @@ namespace PlayGround
                 this[nameof(Section)] = value;
             }
         }
+
+        [JsonIgnore, BsonIgnore]
+        public SdiRevision ActiveRevision => Revisions.FirstOrDefault(a => a.RevisionNumber == RevisionsCount) as SdiRevision;
     }
 }
