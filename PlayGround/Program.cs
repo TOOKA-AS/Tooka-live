@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Live2k.Core.Model;
 using Live2k.Core.Model.Base;
 using Live2k.Core.Model.Basic;
 using Live2k.Core.Model.Basic.Commodities;
@@ -25,6 +26,7 @@ namespace PlayGround
 
             //BsonSerializer.RegisterSerializationProvider(new Live2kSerializationProvider());
             BsonSerializer.RegisterDiscriminatorConvention(typeof(BaseProperty), new BasePropertyDiscriminator());
+            //BsonSerializer.RegisterDiscriminatorConvention(typeof(Entity), new BasePropertyDiscriminator());
             //BsonClassMap.RegisterClassMap<Entity>();
             //BsonClassMap.RegisterClassMap<Node>();
             //BsonClassMap.RegisterClassMap<Relationship>();
@@ -73,8 +75,8 @@ namespace PlayGround
             var factory = new Factory(mediator);
 
             TestRepository(mediator);
-            AddNewObjects(mediator, factory);
-            GetFirstSDIAndChange(mediator, factory);
+            //AddNewObjects(mediator, factory);
+            //GetFirstSDIAndChange(mediator, factory);
 
             //// TEST
 
@@ -172,7 +174,9 @@ namespace PlayGround
         private static void TestRepository(Mediator mediator)
         {
             var repos = new Repository(mediator, _client);
-            var x = repos.Get(a => a.Label == "SDI-8");
+            var node = repos.Get(a => a.Label == "SDI-20");
+            var comment = new Comment(mediator, node, "This is my first comment");
+
         }
 
         private static void GetFirstSDIAndChange(Mediator mediator, Factory factory)

@@ -6,6 +6,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Live2k.Core.Utilities;
 using System.Linq;
+using Live2k.Core.Serializer;
 
 namespace PlayGround
 {

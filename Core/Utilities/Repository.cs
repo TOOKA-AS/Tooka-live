@@ -56,7 +56,7 @@ namespace Live2k.MongoDb
             collection.InsertOne(entity);
         }
 
-        private void RecordHistory<T>(T node) where T : Node
+        private void RecordHistory(Node node)
         {
             // Get history collection
             var collection = this._database.GetCollection<ChangeTracker>("History");
@@ -92,26 +92,29 @@ namespace Live2k.MongoDb
             var collection = _database.GetCollection<Node>("Nodes");
             var filter = Builders<Node>.Filter.Where(predicate);
             var found = collection.Find(filter).FirstOrDefault();
+            var backup = collection.Find(filter).FirstOrDefault();
+            found?.AttachTracker(mediator, found, backup);
             return found;
         }
 
-        public void Update<T>(T entity) where T: Node
+        public void Update(Node entity)
         {
             RecordHistory(entity);
 
             // Get relevant collection
-            var collection = GetCollection(typeof(T)).OfType<T>();
+            var collection = _database.GetCollection<Node>("Nodes");
             collection.FindOneAndReplace(a => a.Label == entity.Label, entity);
         }
 
-        //public void AddComment(Comment comment)
-        //{
-        //    // Get node collection
-        //    var nodeType = Type.GetType(comment.Node.ActualType);
-        //    var nodes = GetCollection(nodeType);
-        //    var filter
-        //    var node = nodes.
-        //}
+        public void SaveComment(Comment comment)
+        {
+            // Get node collection
+            var node = Get(a => a.Id == comment.Node.NodeId && a.ActualType == comment.Node.ActualType);
+            node.UpdateTopTenComments();
+
+            var comments = _database.GetCollection<Comment>("Comments");
+            comments.InsertOne(comment);
+        }
 
         public IEnumerable<T> GetAll<T>() where T: Node
         {
