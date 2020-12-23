@@ -87,6 +87,14 @@ namespace Live2k.MongoDb
             return found;
         }
 
+        public Node Get(Expression<Func<Node, bool>> predicate)
+        {
+            var collection = _database.GetCollection<Node>("Nodes");
+            var filter = Builders<Node>.Filter.Where(predicate);
+            var found = collection.Find(filter).FirstOrDefault();
+            return found;
+        }
+
         public void Update<T>(T entity) where T: Node
         {
             RecordHistory(entity);
@@ -95,6 +103,15 @@ namespace Live2k.MongoDb
             var collection = GetCollection(typeof(T)).OfType<T>();
             collection.FindOneAndReplace(a => a.Label == entity.Label, entity);
         }
+
+        //public void AddComment(Comment comment)
+        //{
+        //    // Get node collection
+        //    var nodeType = Type.GetType(comment.Node.ActualType);
+        //    var nodes = GetCollection(nodeType);
+        //    var filter
+        //    var node = nodes.
+        //}
 
         public IEnumerable<T> GetAll<T>() where T: Node
         {

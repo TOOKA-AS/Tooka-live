@@ -15,6 +15,7 @@ namespace Live2k.Core.Model.Base
     public class Node : Entity
     {
         private bool _isTracked = false;
+        private ICollection<Comment> _sessionComments;
 
         /// <summary>
         /// Constructor to be used by JSON/BSON deserializer
@@ -31,7 +32,7 @@ namespace Live2k.Core.Model.Base
         /// </summary>
         protected Node() : base()
         {
-
+            this._sessionComments = new List<Comment>();
         }
 
         protected Node(Mediator mediator) : base(mediator)
@@ -127,8 +128,8 @@ namespace Live2k.Core.Model.Base
             {
                 if (TopTenHistory.Count() == 10)
                 {
-                    var last = TopTenHistory.Last();
-                    TopTenHistory.Remove(last);
+                    var first = TopTenHistory.First();
+                    TopTenHistory.Remove(first);
                 }
                 TopTenHistory.Add(new ChangeTrackerFoorPrint(ChangeTracker));
             }
@@ -225,6 +226,16 @@ namespace Live2k.Core.Model.Base
         public ICollection<ChangeTrackerFoorPrint> TopTenHistory { get; set; }
 
         /// <summary>
+        /// List of ten most recent comments
+        /// </summary>
+        public ICollection<Comment> TopTenComments { get; set; }
+
+        /// <summary>
+        /// Comments added in the current session
+        /// </summary>
+        public IReadOnlyCollection<Comment> SessionComments => this._sessionComments.ToList().AsReadOnly();
+
+        /// <summary>
         /// Add new outwards relationships
         /// </summary>
         /// <param name="relationships"></param>
@@ -271,6 +282,10 @@ namespace Live2k.Core.Model.Base
             RemoveOutwardRelationship(relationship);
         }
 
+        /// <summary>
+        /// Remove from inward relationships
+        /// </summary>
+        /// <param name="relationship"></param>
         private void RemoveInwardRelationship(Relationship relationship)
         {
             var temp = new List<InRelationshipFootPrint>(RelationshipsIn);
@@ -279,12 +294,60 @@ namespace Live2k.Core.Model.Base
             RelationshipsIn = temp.AsReadOnly();
         }
 
+        /// <summary>
+        /// Remove from outward relationships
+        /// </summary>
+        /// <param name="relationship"></param>
         private void RemoveOutwardRelationship(Relationship relationship)
         {
             var temp = new List<OutRelationshipFootPrint>(RelationshipsOut);
             var rel = temp.FirstOrDefault(a => a.Id == relationship.Id);
             temp.Remove(rel);
             RelationshipsOut = temp.AsReadOnly();
+        }
+
+        /// <summary>
+        /// Register session comment
+        /// </summary>
+        /// <param name="comment"></param>
+        internal void RegisterSessionComment(Comment comment)
+        {
+            this._sessionComments.Add(comment);
+            FireEntityChangedEventHandelr(
+                new Events.EntityChangeEventArgument("Comments",
+                Events.EntityListPropertyChangeTypeEnum.Add,
+                comment));
+        }
+
+        /// <summary>
+        /// Remove comment from session comments
+        /// </summary>
+        /// <param name="comment"></param>
+        internal void RemoveSessionComment(Comment comment)
+        {
+            this._sessionComments.Remove(comment);
+            FireEntityChangedEventHandelr(
+                new Events.EntityChangeEventArgument("Comments",
+                Events.EntityListPropertyChangeTypeEnum.Remove,
+                comment));
+        }
+
+        /// <summary>
+        /// Adds session comments into TopTenComments
+        /// </summary>
+        internal void UpdateTopTenComments()
+        {
+            var topTenComments_copy = new List<Comment>(TopTenComments);
+            foreach (var comment in this._sessionComments)
+            {
+                if (topTenComments_copy.Count() == 10)
+                {
+                    var first = topTenComments_copy.First();
+                    topTenComments_copy.Remove(first);
+                }
+                topTenComments_copy.Add(comment);
+            }
+            TopTenComments = topTenComments_copy.AsReadOnly();
         }
 
         /// <summary>

@@ -72,6 +72,7 @@ namespace PlayGround
             var mediator = new Mediator(user, new DocumentCounterReposity(_client.GetDatabase("Live2K")));
             var factory = new Factory(mediator);
 
+            TestRepository(mediator);
             AddNewObjects(mediator, factory);
             GetFirstSDIAndChange(mediator, factory);
 
@@ -166,6 +167,12 @@ namespace PlayGround
             //repos.Add(sdi);
             //repos.Add(co);
             //repos.AddEntity(rel);
+        }
+
+        private static void TestRepository(Mediator mediator)
+        {
+            var repos = new Repository(mediator, _client);
+            var x = repos.Get(a => a.Label == "SDI-8");
         }
 
         private static void GetFirstSDIAndChange(Mediator mediator, Factory factory)

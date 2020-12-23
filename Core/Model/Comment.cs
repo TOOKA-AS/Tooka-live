@@ -8,11 +8,17 @@ namespace Live2k.Core.Model
     {
         private Comment()
         {
+            Id = Guid.NewGuid().ToString();
         }
 
         public Comment(Mediator mediator, Node node, string body)
         {
+            Node = new NodeFootPrint(node);
+            Signature = new UserSignature(mediator.SessionUser);
+            Body = body;
 
+            // Register comment on the node
+            node.RegisterSessionComment(this);
         }
 
         /// <summary>

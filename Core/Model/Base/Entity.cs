@@ -15,6 +15,7 @@ namespace Live2k.Core.Model.Base
     /// <summary>
     /// Everything in Live2k is an entity at very high level
     /// </summary>
+    [BsonIgnoreExtraElements]
     public class Entity : IValidatableObject
     {
         private string label;
@@ -98,7 +99,8 @@ namespace Live2k.Core.Model.Base
             get => label;
             set
             {
-                entityChangedEventHandler?.Invoke(this, new EntityChangeEventArgument(nameof(Label), this.label, value));
+                FireEntityChangedEventHandelr(
+                    new EntityChangeEventArgument(nameof(Label), this.label, value));
                 this.label = value;
             }
         }
@@ -111,7 +113,8 @@ namespace Live2k.Core.Model.Base
             get => description;
             set
             {
-                entityChangedEventHandler?.Invoke(this, new EntityChangeEventArgument(nameof(Description), this.description, value));
+                FireEntityChangedEventHandelr(
+                    new EntityChangeEventArgument(nameof(Description), this.description, value));
                 this.description = value;
             }
         }
@@ -143,7 +146,8 @@ namespace Live2k.Core.Model.Base
             {
                 var prop = GetProperty(propertyTitle) ?? throw new IndexOutOfRangeException($"No property is defined as {propertyTitle}");
                 if (!listPropertyUpdateInProgress)
-                    entityChangedEventHandler?.Invoke(this, new EntityChangeEventArgument(propertyTitle, prop.GetValue(), value));
+                    FireEntityChangedEventHandelr(new EntityChangeEventArgument(propertyTitle, prop.GetValue(), value));
+                    
                 prop.SetValue(value);
             }
         }
@@ -155,7 +159,7 @@ namespace Live2k.Core.Model.Base
         public void AddTag(params string[] tags)
         {
             Tags = new List<string>(Tags.Concat(tags));
-            entityChangedEventHandler?.Invoke(this,
+            FireEntityChangedEventHandelr(
                 new EntityChangeEventArgument(nameof(Tags), EntityListPropertyChangeTypeEnum.Add, tags));
         }
 
@@ -166,7 +170,7 @@ namespace Live2k.Core.Model.Base
         public void RemoveTag(params string[] tags)
         {
             Tags = new List<string>(Tags.Except(tags));
-            entityChangedEventHandler?.Invoke(this,
+            FireEntityChangedEventHandelr(
                 new EntityChangeEventArgument(nameof(Tags), EntityListPropertyChangeTypeEnum.Remove, tags));
         }
 
@@ -314,7 +318,7 @@ namespace Live2k.Core.Model.Base
                 prop.Add(value);
             }
 
-            entityChangedEventHandler?.Invoke(this, new EntityChangeEventArgument(listPropTitle, changeType, value));
+            FireEntityChangedEventHandelr(new EntityChangeEventArgument(listPropTitle, changeType, value));
 
             // flag list property update
             listPropertyUpdateInProgress = true;
@@ -380,6 +384,15 @@ namespace Live2k.Core.Model.Base
             }
 
             return ValidationResult.Success;
+        }
+
+        /// <summary>
+        /// Fire changed event handler
+        /// </summary>
+        /// <param name="arg"></param>
+        protected void FireEntityChangedEventHandelr(EntityChangeEventArgument arg)
+        {
+            entityChangedEventHandler?.Invoke(this, arg);
         }
 
         /// <summary>
