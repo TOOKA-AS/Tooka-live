@@ -9,13 +9,12 @@ namespace PlayGround
 {
     public class ControlObject : Commodity
     {
-        [JsonConstructor]
-        private ControlObject(Guid temp) : base(temp)
+        private ControlObject(Mediator mediator) : base(mediator)
         {
 
         }
 
-        public ControlObject(Mediator mediator) : base(mediator)
+        private ControlObject(Mediator mediator, bool isFromDb) : base(mediator, isFromDb)
         {
 
         }
@@ -28,6 +27,11 @@ namespace PlayGround
             AddProperty(nameof(Area), "Area in project", typeof(string));
             AddProperty(nameof(ControlObjectCode), "Control object", typeof(string));
             AddProperty(nameof(Status), "Status", typeof(string));
+        }
+
+        protected override void GenerateLabel()
+        {
+
         }
 
         [JsonIgnore, BsonIgnore]

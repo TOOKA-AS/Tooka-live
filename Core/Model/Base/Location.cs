@@ -8,16 +8,6 @@ namespace Live2k.Core.Model.Base
     public class Location : Entity
     {
         /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected Location(Guid temp) : base(temp)
-        {
-
-        }
-
-        /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
         public Location() : base()
@@ -30,6 +20,11 @@ namespace Live2k.Core.Model.Base
             base.AddProperties();
             AddProperty(nameof(Latitude), "Latitude of location", typeof(double));
             AddProperty(nameof(Langtitude), "Latitude of location", typeof(double));
+        }
+
+        public override void Save()
+        {
+            throw new NotImplementedException();
         }
 
         [JsonIgnore, BsonIgnore]

@@ -9,12 +9,12 @@ namespace Live2k.Core.Events
 
     public class EntityChangeEventArgument : EventArgs
     {
-        public EntityChangeEventArgument(string propName, object previousValue, object currentValue)
+        public EntityChangeEventArgument(string propName, bool isMainProperty, object previousValue, object currentValue)
         {
-            Change = new PropertyChange() { Property = propName, PrevisousValue = previousValue, CurrentValue = currentValue };
+            Change = new PropertyChange(isMainProperty) { Property = propName, PrevisousValue = previousValue, CurrentValue = currentValue };
         }
 
-        public EntityChangeEventArgument(string propName, EntityListPropertyChangeTypeEnum type, params object[] items)
+        public EntityChangeEventArgument(string propName, bool isMainProperty, EntityListPropertyChangeTypeEnum type, params object[] items)
         {
             if (string.IsNullOrWhiteSpace(propName))
             {
@@ -26,7 +26,7 @@ namespace Live2k.Core.Events
                 throw new ArgumentNullException(nameof(items));
             }
 
-            var change = new ListPropertyChange()
+            var change = new ListPropertyChange(isMainProperty)
             {
                 Property = propName
             };

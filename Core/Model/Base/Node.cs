@@ -6,38 +6,26 @@ using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using Live2k.Core.Utilities;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Linq.Expressions;
 
 namespace Live2k.Core.Model.Base
 {
     /// <summary>
     /// Base object type
     /// </summary>
-    public class Node : Entity
+    public abstract class Node : Entity
     {
         private bool _isTracked = false;
         private ICollection<Comment> _sessionComments;
 
-        /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected Node(Guid temp) : base(temp)
-        {
-
-        }
-
-        /// <summary>
-        /// Default constructor to be used to initialize object
-        /// </summary>
-        protected Node() : base()
-        {
-            this._sessionComments = new List<Comment>();
-        }
-
         protected Node(Mediator mediator) : base(mediator)
         {
             CreatedBy = new UserSignature(mediator.SessionUser);
+        }
+
+        protected Node(Mediator mediator, bool isFromDb) : base(mediator, isFromDb)
+        {
+            this._sessionComments = new List<Comment>();
         }
 
         /// <summary>
@@ -47,16 +35,16 @@ namespace Live2k.Core.Model.Base
         /// <param name="current"></param>
         /// <param name="previous"></param>
         /// <returns></returns>
-        internal void AttachTracker(Mediator mediator, Node current, Node previous)
+        internal void AttachTracker(Node current, Node previous)
         {
             if (!_isTracked)
             {
-                var tracker = new ChangeTracker(mediator);
+                var tracker = new ChangeTracker(this.mediator);
                 tracker.Track(current, previous);
                 ChangeTracker = tracker;
                 _isTracked = true;
             }
-            AttachTrackersSubNodes(mediator, current, previous);
+            AttachTrackersSubNodes(current, previous);
         }
 
         /// <summary>
@@ -65,7 +53,7 @@ namespace Live2k.Core.Model.Base
         /// <param name="mediator"></param>
         /// <param name="current"></param>
         /// <param name="previous"></param>
-        private void AttachTrackersSubNodes(Mediator mediator, Node current, Node previous)
+        private void AttachTrackersSubNodes(Node current, Node previous)
         {
             // Get subnodes of current
             var currentSubnodes = current.GetSubNodes();
@@ -75,7 +63,7 @@ namespace Live2k.Core.Model.Base
 
             for (int i = 0; i < previousSubNodes.Count(); i++)
             {
-                currentSubnodes.ElementAt(i).AttachTracker(mediator, currentSubnodes.ElementAt(i), previousSubNodes.ElementAt(i));
+                currentSubnodes.ElementAt(i).AttachTracker(currentSubnodes.ElementAt(i), previousSubNodes.ElementAt(i));
             }
         }
 
@@ -133,6 +121,9 @@ namespace Live2k.Core.Model.Base
                 }
                 TopTenHistory.Add(new ChangeTrackerFoorPrint(ChangeTracker));
             }
+
+            if (ChangeTracker.HasMainPropertyChange)
+                LastModifiedBy = ChangeTracker.Signature;
 
             // Add history for sub nodes (if any)
             AddSubNodesHistory();
@@ -192,6 +183,7 @@ namespace Live2k.Core.Model.Base
             RelationshipsOut = new List<OutRelationshipFootPrint>();
             RelationshipsIn = new List<InRelationshipFootPrint>();
             TopTenHistory = new List<ChangeTrackerFoorPrint>();
+            TopTenComments = new List<Comment>();
         }
 
         /// <summary>
@@ -314,7 +306,7 @@ namespace Live2k.Core.Model.Base
         {
             this._sessionComments.Add(comment);
             FireEntityChangedEventHandelr(
-                new Events.EntityChangeEventArgument("Comments",
+                new Events.EntityChangeEventArgument("Comments", false,
                 Events.EntityListPropertyChangeTypeEnum.Add,
                 comment));
         }
@@ -327,7 +319,7 @@ namespace Live2k.Core.Model.Base
         {
             this._sessionComments.Remove(comment);
             FireEntityChangedEventHandelr(
-                new Events.EntityChangeEventArgument("Comments",
+                new Events.EntityChangeEventArgument("Comments", false,
                 Events.EntityListPropertyChangeTypeEnum.Remove,
                 comment));
         }
@@ -350,25 +342,32 @@ namespace Live2k.Core.Model.Base
             TopTenComments = topTenComments_copy.AsReadOnly();
         }
 
-        /// <summary>
-        /// Change current object´s type
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public virtual T Cast<T>() where T : Node, new()
+        public override void Save()
         {
-            var obj = new T();
-            obj.Id = Id;
-            obj.Label = Label;
-            obj.Description = Description;
-            obj.Tags = Tags;
-            obj.Properties = Properties;
-            obj.ChangeTracker = ChangeTracker;
-            obj.CreatedBy = CreatedBy;
-            obj.LastModifiedBy = LastModifiedBy;
-            obj.TopTenHistory = TopTenHistory;
+            // Check if the object is tracked
+            if (!this._isTracked)
+                throw new NotSupportedException("Cannot save not tracked entities.");
 
-            return obj;
+            // Check if the object is from databse
+            if (this._isFromDb)
+                this.mediator.NodeRepository.Update(this);
+            else
+                this.mediator.NodeRepository.AddNode(this);
+        }
+
+        public static T NewNode<T>(Mediator mediator, string label, string description, params Tuple<string, object>[] properties) where T : Entity
+        {
+            return mediator.Factory.CreateNew<T>(label, description, properties);
+        }
+
+        public static Node GetFromDatabase(Mediator mediator, Expression<Func<Node, bool>> predicate)
+        {
+            return mediator.NodeRepository.GetAsNode(predicate);
+        }
+
+        public static T GetFromDatabase<T>(Mediator mediator, Expression<Func<T, bool>> predicate) where T: Node
+        {
+            return mediator.NodeRepository.GetAsActualType(predicate);
         }
     }
 }

@@ -16,39 +16,33 @@ namespace Live2k.Core.Model.Base
     /// Everything in Live2k is an entity at very high level
     /// </summary>
     [BsonIgnoreExtraElements]
-    public class Entity : IValidatableObject
+    public abstract class Entity : IValidatableObject
     {
         private string label;
         private string description;
         private bool listPropertyUpdateInProgress = false;
         protected readonly Mediator mediator;
+        protected readonly bool _isFromDb;
 
         internal event EventHandler<EntityChangeEventArgument> entityChangedEventHandler;
 
-        /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected Entity(Guid temp)
+        protected Entity()
         {
 
         }
 
-        /// <summary>
-        /// Constructor which initializes list objects and adds properties
-        /// </summary>
-        protected Entity()
+        protected Entity(Mediator mediator) : this()
         {
+            this.mediator = mediator;
             Id = Guid.NewGuid().ToString();
             ActualType = GetType().FullName;
             InitializeListObjects();
             AddProperties();
         }
 
-        protected Entity(Mediator mediator) : this()
+        protected Entity(Mediator mediator, bool isFromDb) : this(mediator)
         {
-            this.mediator = mediator;
+            this._isFromDb = isFromDb;
         }
 
         /// <summary>
@@ -100,7 +94,7 @@ namespace Live2k.Core.Model.Base
             set
             {
                 FireEntityChangedEventHandelr(
-                    new EntityChangeEventArgument(nameof(Label), this.label, value));
+                    new EntityChangeEventArgument(nameof(Label), true, this.label, value));
                 this.label = value;
             }
         }
@@ -114,7 +108,7 @@ namespace Live2k.Core.Model.Base
             set
             {
                 FireEntityChangedEventHandelr(
-                    new EntityChangeEventArgument(nameof(Description), this.description, value));
+                    new EntityChangeEventArgument(nameof(Description), true, this.description, value));
                 this.description = value;
             }
         }
@@ -146,7 +140,7 @@ namespace Live2k.Core.Model.Base
             {
                 var prop = GetProperty(propertyTitle) ?? throw new IndexOutOfRangeException($"No property is defined as {propertyTitle}");
                 if (!listPropertyUpdateInProgress)
-                    FireEntityChangedEventHandelr(new EntityChangeEventArgument(propertyTitle, prop.GetValue(), value));
+                    FireEntityChangedEventHandelr(new EntityChangeEventArgument(propertyTitle, true, prop.GetValue(), value));
                     
                 prop.SetValue(value);
             }
@@ -160,7 +154,7 @@ namespace Live2k.Core.Model.Base
         {
             Tags = new List<string>(Tags.Concat(tags));
             FireEntityChangedEventHandelr(
-                new EntityChangeEventArgument(nameof(Tags), EntityListPropertyChangeTypeEnum.Add, tags));
+                new EntityChangeEventArgument(nameof(Tags), true, EntityListPropertyChangeTypeEnum.Add, tags));
         }
 
         /// <summary>
@@ -171,7 +165,7 @@ namespace Live2k.Core.Model.Base
         {
             Tags = new List<string>(Tags.Except(tags));
             FireEntityChangedEventHandelr(
-                new EntityChangeEventArgument(nameof(Tags), EntityListPropertyChangeTypeEnum.Remove, tags));
+                new EntityChangeEventArgument(nameof(Tags), true, EntityListPropertyChangeTypeEnum.Remove, tags));
         }
 
         /// <summary>
@@ -318,7 +312,7 @@ namespace Live2k.Core.Model.Base
                 prop.Add(value);
             }
 
-            FireEntityChangedEventHandelr(new EntityChangeEventArgument(listPropTitle, changeType, value));
+            FireEntityChangedEventHandelr(new EntityChangeEventArgument(listPropTitle, true, changeType, value));
 
             // flag list property update
             listPropertyUpdateInProgress = true;
@@ -403,5 +397,7 @@ namespace Live2k.Core.Model.Base
         {
             return GetType().GetProperties();
         }
+
+        public abstract void Save();
     }
 }

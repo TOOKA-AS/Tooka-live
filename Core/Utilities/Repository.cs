@@ -16,7 +16,6 @@ namespace Live2k.MongoDb
     {
         public static event EventHandler<Entity> NewEntityAdded;
         private readonly Mediator mediator;
-        private readonly MongoClient _client;
         private readonly IMongoDatabase _database;
 
         static Repository()
@@ -24,14 +23,18 @@ namespace Live2k.MongoDb
             
         }
 
-        public Repository(Mediator mediator, MongoClient client)
+        public Repository(Mediator mediator, IMongoDatabase databse)
         {
             this.mediator = mediator;
-            this._client = client;
-            this._database = _client.GetDatabase("Live2K");
+            this._database = databse;
         }
 
-        public void Add<T>(T node) where T: Node
+        /// <summary>
+        /// Add a node
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="node"></param>
+        public void AddNode<T>(T node) where T: Node
         {
             // validate entity
             ValidateEntity(node);
@@ -46,16 +49,25 @@ namespace Live2k.MongoDb
             NewEntityAdded?.Invoke(this, node);
         }
 
-        public void AddEntity<T>(T entity) where T: Entity
+        /// <summary>
+        /// Add an entity
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="relationship"></param>
+        public void AddRelationship<T>(T relationship) where T: Relationship
         {
-            ValidateEntity(entity);
+            ValidateEntity(relationship);
 
             // Get relevant collection
-            var collection = GetCollection(entity);
+            var collection = GetCollection(relationship);
 
-            collection.InsertOne(entity);
+            collection.InsertOne(relationship);
         }
 
+        /// <summary>
+        /// Record history on the node
+        /// </summary>
+        /// <param name="node"></param>
         private void RecordHistory(Node node)
         {
             // Get history collection
@@ -83,7 +95,7 @@ namespace Live2k.MongoDb
             var filter = Builders<T>.Filter.Where(predicate);
             var found = collection.Find(filter).FirstOrDefault();
             var backup = collection.Find(filter).FirstOrDefault();
-            found?.AttachTracker(mediator, found, backup);
+            found?.AttachTracker(found, backup);
             return found;
         }
 
@@ -93,7 +105,7 @@ namespace Live2k.MongoDb
             var filter = Builders<Node>.Filter.Where(predicate);
             var found = collection.Find(filter).FirstOrDefault();
             var backup = collection.Find(filter).FirstOrDefault();
-            found?.AttachTracker(mediator, found, backup);
+            found?.AttachTracker(found, backup);
             return found;
         }
 
@@ -106,14 +118,14 @@ namespace Live2k.MongoDb
             collection.FindOneAndReplace(a => a.Label == entity.Label, entity);
         }
 
-        public void SaveComment(Comment comment)
+        public void SaveComment(Node node, Comment comment)
         {
-            // Get node collection
-            var node = Get(a => a.Id == comment.Node.NodeId && a.ActualType == comment.Node.ActualType);
             node.UpdateTopTenComments();
 
             var comments = _database.GetCollection<Comment>("Comments");
             comments.InsertOne(comment);
+
+            Update(node);
         }
 
         public IEnumerable<T> GetAll<T>() where T: Node

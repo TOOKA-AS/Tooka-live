@@ -1,6 +1,7 @@
 ﻿using System;
 using Live2k.Core.Model.Base;
 using Live2k.Core.Utilities;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace Live2k.Core.Model.Basic
@@ -10,25 +11,15 @@ namespace Live2k.Core.Model.Basic
     /// </summary>
     public class Assignment : Node
     {
-        protected Assignment()
-        {
-
-        }
-
-        /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected Assignment(Guid temp) : base(temp)
-        {
-
-        }
-
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public Assignment(Mediator mediator) : base(mediator)
+        protected Assignment(Mediator mediator) : base(mediator)
+        {
+
+        }
+
+        protected Assignment(Mediator mediator, bool isFromDb) : base(mediator, isFromDb)
         {
 
         }

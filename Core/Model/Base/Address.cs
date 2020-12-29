@@ -8,16 +8,6 @@ namespace Live2k.Core.Model.Base
     public class Address : Entity
     {
         /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected Address(Guid temp) : base(temp)
-        {
-
-        }
-
-        /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
         public Address() : base()
@@ -32,6 +22,11 @@ namespace Live2k.Core.Model.Base
             AddProperty(nameof(City), "City", typeof(string));
             AddProperty(nameof(Street), "Street", typeof(string));
             AddProperty("Postal code", "Postal code", typeof(string));
+        }
+
+        public override void Save()
+        {
+            throw new NotImplementedException();
         }
 
         [JsonIgnore, BsonIgnore]

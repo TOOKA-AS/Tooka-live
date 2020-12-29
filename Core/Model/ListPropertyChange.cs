@@ -7,7 +7,7 @@ namespace Live2k.Core.Model
 {
     public sealed class ListPropertyChange : Change
     {
-        public ListPropertyChange()
+        public ListPropertyChange(bool isMainPropertyChange) : base(isMainPropertyChange)
         {
             AddedItems = new List<object>();
             RemovedItems = new List<object>();

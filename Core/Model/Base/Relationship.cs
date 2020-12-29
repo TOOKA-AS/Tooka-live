@@ -10,16 +10,6 @@ namespace Live2k.Core.Model.Base
     public abstract class Relationship : Entity
     {
         /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected Relationship(Guid temp) : base(temp)
-        {
-
-        }
-
-        /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
         protected Relationship() : base()
@@ -33,6 +23,11 @@ namespace Live2k.Core.Model.Base
             Target = new NodeFootPrint(target);
             origin.AddOutwardRelationship(this);
             target.AddInwardRelationship(this);
+        }
+
+        public override void Save()
+        {
+            throw new NotImplementedException();
         }
 
         public NodeFootPrint Origin { get; private set; }

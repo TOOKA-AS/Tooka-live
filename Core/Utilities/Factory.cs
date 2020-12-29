@@ -27,11 +27,11 @@ namespace Live2k.Core.Utilities
 
             // if instance is a RevisableCommodity, call Revise method
             if (instance is RevisableCommodity)
-                (instance as RevisableCommodity).Revise(this);
+                (instance as RevisableCommodity).Revise();
 
             // if instance is a node, call AttachTracker method
             if (instance is Node)
-                (instance as Node).AttachTracker(this.mediator, instance as Node, null);
+                (instance as Node).AttachTracker(instance as Node, null);
 
             return instance;
         }
@@ -45,11 +45,9 @@ namespace Live2k.Core.Utilities
         public T CreateNew<T>() where T: Entity
         {
             // Get constructor accepting mediator
-            var constructor = GetConstructor(typeof(T)) ?? GetConstructorWithFactory(typeof(T)) ??
+            var constructor = GetConstructor(typeof(T)) ??
                 throw new TypeAccessException($"Could not find proper constructor for {typeof(T)}");
-            var instance = constructor.GetParameters().Length == 1 ?
-                           constructor.Invoke(new object[] { this.mediator }) :
-                           constructor.Invoke(new object[] { this.mediator, this}) ?? 
+            var instance = constructor.Invoke(new object[] { this.mediator }) ?? 
                 throw new OperationCanceledException($"Could not instanciate {typeof(T)}");
             return instance as T;
         }
@@ -59,14 +57,6 @@ namespace Live2k.Core.Utilities
             return type.GetConstructor(BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                 null,
                 new Type[] { typeof(Mediator) },
-                null);
-        }
-
-        private ConstructorInfo GetConstructorWithFactory(Type type)
-        {
-            return type.GetConstructor(BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                null,
-                new Type[] { typeof(Mediator), typeof(Factory) },
                 null);
         }
     }

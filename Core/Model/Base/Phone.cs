@@ -8,16 +8,6 @@ namespace Live2k.Core.Model.Base
     public class Phone : Entity
     {
         /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected Phone(Guid temp) : base(temp)
-        {
-
-        }
-
-        /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
         public Phone() : base()
@@ -29,6 +19,11 @@ namespace Live2k.Core.Model.Base
         {
             base.AddProperties();
             AddProperty("Phone number", "Phone number", typeof(string));
+        }
+
+        public override void Save()
+        {
+            throw new NotImplementedException();
         }
 
         [JsonIgnore, BsonIgnore]

@@ -14,6 +14,7 @@
     <Folder Include="Serializer\" />
     <Folder Include="Events\" />
     <Folder Include="Attributes\" />
+    <Folder Include="Model\Basic\Assignments\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

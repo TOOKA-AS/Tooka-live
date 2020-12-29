@@ -146,6 +146,9 @@ namespace Live2k.Core.Model
         public Entity CurrentSnapshot { get; set; }
 
         [BsonIgnore]
+        public bool HasMainPropertyChange => Changes.Any(a => a.IsMainPropertyChange);
+
+        [BsonIgnore]
         public bool IsChanged => ChangeType != ChangeType.Update || Changes.Any(a => a.HasChanged);
 
         /// <summary>

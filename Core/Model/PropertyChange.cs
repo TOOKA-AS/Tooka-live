@@ -5,6 +5,11 @@ namespace Live2k.Core.Model
 {
     public sealed class PropertyChange : Change
     {
+        public PropertyChange(bool isMainPropertyChange) : base(isMainPropertyChange)
+        {
+
+        }
+
         /// <summary>
         /// Previous instance of property
         /// </summary>

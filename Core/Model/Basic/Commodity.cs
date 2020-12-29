@@ -12,25 +12,15 @@ namespace Live2k.Core.Model.Basic
     /// </summary>
     public class Commodity : Node
     {
-        protected Commodity()
-        {
-
-        }
-
-        /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected Commodity(Guid temp) : base(temp)
-        {
-
-        }
-
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public Commodity(Mediator mediator) : base(mediator)
+        protected Commodity(Mediator mediator) : base(mediator)
+        {
+
+        }
+
+        protected Commodity(Mediator mediator, bool isFromDb) : base(mediator, isFromDb)
         {
 
         }

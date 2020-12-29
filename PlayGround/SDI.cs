@@ -13,13 +13,12 @@ namespace PlayGround
     [RevisionType(typeof(SdiRevision))]
     public sealed class SDI : RevisableCommodity
     {
-        [JsonConstructor]
-        private SDI(Guid temp) : base(temp)
+        private SDI(Mediator mediator) : base(mediator)
         {
 
         }
 
-        public SDI(Mediator mediator, Factory factory) : base(mediator, factory)
+        private SDI(Mediator mediator, bool isFromDb) : base(mediator, isFromDb)
         {
 
         }

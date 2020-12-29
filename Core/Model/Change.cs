@@ -5,12 +5,19 @@ namespace Live2k.Core.Model
 {
     public class Change
     {
+        public Change(bool isMainPropertyChange)
+        {
+            IsMainPropertyChange = isMainPropertyChange;
+        }
+
         /// <summary>
         /// Name of changed property
         /// </summary>
         public string Property { get; set; }
 
         public virtual bool HasChanged { get; }
+
+        public bool IsMainPropertyChange { get; }
 
         public virtual string Report()
         {

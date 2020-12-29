@@ -7,25 +7,16 @@ namespace Live2k.Core.Model.Basic.Commodities
 {
     public class RevisionCommodity : Commodity
     {
-        protected RevisionCommodity()
-        {
-
-        }
-
-        /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected RevisionCommodity(Guid temp) : base(temp)
-        {
-
-        }
 
         /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
-        public RevisionCommodity(Mediator mediator) : base(mediator)
+        protected RevisionCommodity(Mediator mediator) : base(mediator)
+        {
+
+        }
+
+        protected RevisionCommodity(Mediator mediator, bool isFromDb) : base(mediator, isFromDb)
         {
 
         }

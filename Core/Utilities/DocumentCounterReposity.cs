@@ -12,7 +12,7 @@ namespace Live2k.Core.Utilities
         public DocumentCounterReposity(IMongoDatabase db)
         {
             this.db = db;
-            Repository.NewEntityAdded += Repository_NewEntityAdded;
+            NodeRepository.NewNodeAdded += Repository_NewEntityAdded;
         }
 
         private void Repository_NewEntityAdded(object sender, Model.Base.Entity e)

@@ -8,16 +8,6 @@ namespace Live2k.Core.Model.Basic.Relationships
     public class ReferenceRelationship : Relationship
     {
         /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected ReferenceRelationship(Guid temp) : base(temp)
-        {
-
-        }
-
-        /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
         public ReferenceRelationship() : base()

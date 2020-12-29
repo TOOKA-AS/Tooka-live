@@ -13,16 +13,6 @@ namespace Live2k.Core.Model.Base
     public class User : Entity
     {
         /// <summary>
-        /// Constructor to be used by JSON/BSON deserializer
-        /// </summary>
-        /// <param name="temp"></param>
-        [JsonConstructor]
-        protected User(Guid temp) : base(temp)
-        {
-
-        }
-
-        /// <summary>
         /// Default constructor to be used to initialize object
         /// </summary>
         protected User() : base()
@@ -30,7 +20,7 @@ namespace Live2k.Core.Model.Base
 
         }
 
-        public User(string emailAddress) : base()
+        public User(string emailAddress) : base(null)
         {
             EmailAddress = emailAddress;
             Id = EmailAddress;
@@ -50,6 +40,14 @@ namespace Live2k.Core.Model.Base
             AddProperty("Email address", $"Email address of the {nameof(User)}", typeof(string));
             AddListProperty("Phone numbers", "List of phone numbers", typeof(Phone));
             AddListProperty("Addresses", "List of addresses", typeof(Address));
+        }
+
+        public override void Save()
+        {
+            if (this._isFromDb)
+                this.mediator.UserRepository.UpdateUser(this);
+            else
+                this.mediator.UserRepository.AddUser(this);
         }
 
         [JsonIgnore, BsonIgnore]

@@ -8,18 +8,12 @@ namespace PlayGround
 {
     public sealed class SdiRevision : RevisionCommodity
     {
-        public SdiRevision() : base()
+        private SdiRevision(Mediator mediator) : base(mediator)
         {
 
         }
 
-        [JsonConstructor]
-        private SdiRevision(Guid temp) : base(temp)
-        {
-
-        }
-
-        public SdiRevision(Mediator mediator) : base(mediator)
+        private SdiRevision(Mediator mediator, bool isFromDb) : base(mediator, isFromDb)
         {
 
         }

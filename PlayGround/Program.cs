@@ -18,258 +18,96 @@ namespace PlayGround
 {
     class Program
     {
-        private static MongoClient _client;
+        private static Mediator _mediator;
 
         static void Main(string[] args)
         {
-            
+            // Login
+            LoginOrRegister();
 
-            //BsonSerializer.RegisterSerializationProvider(new Live2kSerializationProvider());
-            BsonSerializer.RegisterDiscriminatorConvention(typeof(BaseProperty), new BasePropertyDiscriminator());
-            //BsonSerializer.RegisterDiscriminatorConvention(typeof(Entity), new BasePropertyDiscriminator());
-            //BsonClassMap.RegisterClassMap<Entity>();
-            //BsonClassMap.RegisterClassMap<Node>();
-            //BsonClassMap.RegisterClassMap<Relationship>();
-            //BsonClassMap.RegisterClassMap<Commodity>(cm =>
-            //{
-            //    cm.AutoMap();
-            //    cm.SetIsRootClass(true);
-            //    cm.AddKnownType(typeof(RevisableCommodity));
-            //    cm.AddKnownType(typeof(RevisionCommodity));
-            //    cm.AddKnownType(typeof(ControlObject));
-            //});
-            //BsonClassMap.RegisterClassMap<RevisableCommodity>(cm =>
-            //{
-            //    cm.AutoMap();
-            //    cm.AddKnownType(typeof(SDI));
-            //});
-            //BsonClassMap.RegisterClassMap<RevisionCommodity>(cm =>
-            //{
-            //    cm.AutoMap();
-            //    cm.AddKnownType(typeof(SdiRevision));
-            //});
-            //BsonClassMap.RegisterClassMap<SDI>();
-            //BsonClassMap.RegisterClassMap<SdiRevision>();
-
-            //BsonClassMap.RegisterClassMap<BaseProperty>(cm =>
-            //{
-            //    cm.AutoMap();
-            //    cm.SetIsRootClass(true);
-            //});
-            //BsonClassMap.RegisterClassMap<Property<string>>();
-            //BsonClassMap.RegisterClassMap<Property<DateTime>>();
-            //BsonClassMap.RegisterClassMap<Property<int>>();
-            //BsonClassMap.RegisterClassMap<Property<double>>();
-
-
-            // connection to MongoDb
-            _client = new MongoClient("mongodb+srv://m001-student:m001-mongodb-basics@sandbox.aidnp.mongodb.net/temp?retryWrites=true&w=majority");
-
-            // Mediator
-            var user = new User("faramarz.bodaghi@outlook.com");
-            user.FirstName = "Faramarz";
-            user.LastName = "Bodaghi";
-            user.Birthday = new DateTime(1986, 9, 19);
-
-            var mediator = new Mediator(user, new DocumentCounterReposity(_client.GetDatabase("Live2K")));
-            var factory = new Factory(mediator);
-
-            TestRepository(mediator);
-            //AddNewObjects(mediator, factory);
-            //GetFirstSDIAndChange(mediator, factory);
-
-            //// TEST
-
-            var db = _client.GetDatabase("Live2K");
-            //var collection = db.GetCollection<Node>("Nodes");
-            //var method = db.GetType().GetMethod("GetCollection").MakeGenericMethod(Type.GetType("PlayGround.SDI"));
-            //var collection = method.Invoke(db, new[] { "Nodes", null });
-            //var found = collection.Find(a => a.Label == "SDI");
-            //var temp = found.CountDocuments();
-            //var founditem = collection.Find(a => a.Label == "SDI")
-            //    .ToList().FirstOrDefault();
-
-            //var castMethod = founditem.GetType().GetMethod("Cast").MakeGenericMethod(Type.GetType(founditem.ActualType));
-            //SDI asSDI = castMethod.Invoke(founditem, new object[0]) as SDI;
-            //asSDI.Section = "44542";
-            //asSDI.Label = "ChangedSDI";
-
-            // Get sdi
-            //var tempRepos = new Repository(mediator, _client);
-            //var foundSdi = tempRepos.Get<SDI>(a => a.Label == "SDI-1");
-            //foundSdi.Description = "Aram is observing";
-            //foundSdi.Description = "Aram is not observing";
-            //foundSdi.Revisions.FirstOrDefault().Description = "We are adding a desc here";
-            //foundSdi.DataCode = "Changed";
-            //var revision2 = foundSdi.Revise(mediator).Cast<SdiRevision>();
-            //revision2.NumberOfDocs = 20;
-            //revision2.Tags.Add("new rev");
-            //tempRepos.Update(foundSdi);
-
-            //var number = founditem.CountDocuments();
-
-            //// TEST
-
-
-            // getting all sdis
-            //var repository = new Repository(_client);
-            //var result = repository.GetAll<SDI>();
-
-            //var first = result.FirstOrDefault();
-            //var firstSdi = first as SDI;
-
-
-            //Test1();
-
-
-
-
-            // make an SDI
-            //var sdi = new SDI(mediator);
-            ////sdi.Id = Guid.NewGuid().ToString();
-            //sdi.DataCode = "SDI-222-11-01";
-            //sdi.Section = "2222";
-
-            //var xx = sdi.Revisions;
-
-            // revise SDI
-            //var revision = sdi.Revise(new Factory(mediator)).Cast<SdiRevision>();
-            //revision.Id = Guid.NewGuid().ToString();
-            //revision.NumberOfDocs = 20;
-            //revision.Tags.Add("dddd");
-            //var y = sdi["Revisions"];
-            //var x = sdi.Revisions;
-
-            // Control object
-            //var co = new ControlObject(mediator);
-            //co.Id = Guid.NewGuid().ToString();
-            //co.AvevaId = "=1234/4345";
-            //co.Section = "222";
-            //co.Area = "BC110";
-            //co.ControlObjectCode = "222-11-0001";
-            //co.Status = "A2";
-
-            //// Relationship to SDI
-            //var rel = new ReferenceRelationship();
-            //rel.Id = Guid.NewGuid().ToString();
-            //rel.SetNodes(co, sdi);
-
-            //JsonSerializer serializer = new JsonSerializer();
-            //serializer.TypeNameHandling = TypeNameHandling.Auto;
-            //using (var writer = new StreamWriter("TestSDI.json"))
-            //using (var coWriter = new StreamWriter("TestCo.json"))
-            //using (var relWriter = new StreamWriter("TestRel.json"))
-            //{
-            //    serializer.Serialize(writer, sdi);
-            //    serializer.Serialize(coWriter, co);
-            //    serializer.Serialize(relWriter, rel);
-            //}
-
-            //var repos = new Repository(mediator, _client);
-            //repos.Add(sdi);
-            //repos.Add(co);
-            //repos.AddEntity(rel);
+            // Test node reporitory
+            TestNodeRepoeitory();
         }
 
-        private static void TestRepository(Mediator mediator)
+        private static void TestNodeRepoeitory()
         {
-            var repos = new Repository(mediator, _client);
-            var node = repos.Get(a => a.Label == "SDI-20");
-            var comment = new Comment(mediator, node, "This is my first comment");
+            // Add a new node
+            NewNode();
 
+            // Get a sdi
+            var node = GetNode();
+            var sdi = GetNode<SDI>();
+            var rev = sdi.Revise();
+            rev.Description = "Recently added";
+
+            sdi.Save();
         }
 
-        private static void GetFirstSDIAndChange(Mediator mediator, Factory factory)
+        private static Node GetNode()
         {
-            var repos = new Repository(mediator, _client);
-            var sdi = repos.Get<SDI>(a => a.Label == "SDI-8");
-            sdi.AddTag("Tag1", "Tag2", "Tag3");
-            sdi.Revise(factory);
-            sdi.RemoveTag("Tag1", "Tag2");
-            sdi.AddTag("Hello");
-            repos.Update(sdi);
+            return Node.GetFromDatabase(_mediator, a => a.Label == "SDI-1");
         }
 
-        private static void AddNewObjects(Mediator mediator, Factory factory)
+        private static T GetNode<T>() where T: Node
+        {
+            return Node.GetFromDatabase<T>(_mediator, a => a.Label == "SDI-2");
+        }
+
+        private static void NewNode()
         {
             // new SDI
-            var sdi = factory.CreateNew<SDI>(null, "First sdi", new Tuple<string, object>("DataCode", "SDI-222-20-01"),
-                                                                new Tuple<string, object>("Section", "222"));
-            
-            // add properties to active revision
-            sdi.ActiveRevision.NumberOfDocs = 20;
-            sdi.ActiveRevision.Description = "New Sdi revision";
+            var sdi = Node.NewNode<SDI>(_mediator, null, "Final try",
+                new Tuple<string, object>("DataCode", "ewrew"),
+                new Tuple<string, object>("Section", "3333"));
+            sdi.Save();
 
-            var repos = new Repository(mediator, _client);
-            repos.Add(sdi);
+            var co = Node.NewNode<ControlObject>(_mediator, "=122453/2132", "ssss");
+            co.Save();
         }
 
-        //static void Test1()
-        //{
-        //    Deserialize();
-
-        //    var user = new User();
-        //    user.FirstName = "Faramarz";
-        //    user.LastName = "Bodaghi";
-
-        //    var phone = new Phone();
-        //    phone.PhoneNumber = "98100918";
-        //    phone.Tags.Add("Mobile");
-        //    phone.Description = "Mobile";
-
-        //    user.MobilePhone = phone;
-
-        //    user.Birthday = new DateTime(1986, 9, 19);
-
-
-        //    var address = new Address();
-        //    address.City = "Høvik";
-        //    address.Label = "Home address";
-        //    address.Langtitude = 122442;
-        //    address.Latitude = 33234;
-        //    address.PostalCode = "1365";
-        //    address.Provience = "Viken";
-        //    address.Street = "Kokkerudåsen 21";
-        //    address.Description = "Temporart home address";
-
-        //    user.AddToListProperty("Addresses", "Home address", address);
-        //    var home = user.HomeAddress;
-
-
-        //    JsonSerializer serializer = new JsonSerializer();
-        //    serializer.TypeNameHandling = TypeNameHandling.Auto;
-        //    using (var writer = new StreamWriter("TestJson.json"))
-        //    {
-        //        serializer.Serialize(writer, user, typeof(User));
-        //    }
-
-        //    var repos = new Repository(_client);
-        //    repos.Add(user);
-        //}
-
-        static void Deserialize()
+        private static void LoginOrRegister()
         {
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.TypeNameHandling = TypeNameHandling.Auto;
-            serializer.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
-            using (var reader = new StreamReader("TestJson.json"))
+            // ask if user wants to login or register
+            Console.Write("Are you already registered? (Y/N)");
+            var answ = Console.ReadKey();
+            Console.Clear();
+            if (answ.Key == ConsoleKey.Y)
             {
-                var x = serializer.Deserialize(reader, typeof(User));
+                Login();
+            }
+            else if (answ.Key == ConsoleKey.N)
+            {
+                Register();
+            }
+            else
+            {
+                Console.WriteLine("Not valid carachter. Press any key to terminate");
+                Console.Read();
             }
         }
 
-        static User GetUser()
+        private static void Register()
         {
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.TypeNameHandling = TypeNameHandling.Auto;
-            serializer.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
-            User user;
-            using (var reader = new StreamReader("TestJson.json"))
-            {
-                user = serializer.Deserialize(reader, typeof(User)) as User;
-            }
+            var user = new User(GetUserInput("Please enter you email address: "));
+            user.FirstName = GetUserInput("First name: ");
+            user.LastName = GetUserInput("Last name: ");
+            user.Birthday = new DateTime(int.Parse(GetUserInput("Birth year: ")),
+                int.Parse(GetUserInput("Birth month: ")),
+                int.Parse(GetUserInput("Birth day: ")));
+            _mediator = new Mediator(user);
+        }
 
-            return user;
+        private static string GetUserInput(string message)
+        {
+            Console.Write(message);
+            return Console.ReadLine();
+        }
+
+        private static void Login()
+        {
+            Console.Write("Please enter you email address: ");
+            var email = Console.ReadLine();
+            _mediator = new Mediator(email);
         }
     }
 }
