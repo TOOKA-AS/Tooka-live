@@ -40,6 +40,9 @@ namespace PlayGround
             var rev = sdi.Revise();
             rev.Description = "Recently added";
 
+            Comment.New(_mediator, sdi, "This is new comment");
+            Comment.New(_mediator, rev, "This is another comment");
+
             sdi.Save();
         }
 

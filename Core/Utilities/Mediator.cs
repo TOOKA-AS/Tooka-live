@@ -42,6 +42,7 @@ namespace Live2k.Core.Utilities
         private void InstanciateRepositories()
         {
             UserRepository = new UserRepository(this._database);
+            CommentRepository = new CommentRepository(this._database);
             CounterReposity = new DocumentCounterReposity(this._database);
             NodeRepository = new NodeRepository(this, this._database);
         }
@@ -78,6 +79,7 @@ namespace Live2k.Core.Utilities
 
         internal User SessionUser { get; }
         internal UserRepository UserRepository { get; private set; }
+        internal CommentRepository CommentRepository { get; private set; }
         internal DocumentCounterReposity CounterReposity { get; private set; }
         internal NodeRepository NodeRepository { get; private set; }
         internal Factory Factory { get; }

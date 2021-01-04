@@ -135,6 +135,9 @@ namespace Live2k.Core.Utilities
             // Record history
             RecordHistory(node);
 
+            // Recored comments
+            RecoredComments(node);
+
             Collection.InsertOne(node);
             NewNodeAdded?.Invoke(this, node);
         }
@@ -146,6 +149,10 @@ namespace Live2k.Core.Utilities
         public void Update(Node node)
         {
             RecordHistory(node);
+
+            // Recored comments
+            RecoredComments(node);
+
             Collection.FindOneAndReplace(a => a.Label == node.Label, node);
         }
 
@@ -214,6 +221,18 @@ namespace Live2k.Core.Utilities
 
             if (trackersToRecord.Count != 0)
                 collection.InsertMany(trackersToRecord);
+        }
+
+        private void RecoredComments(Node node)
+        {
+            // If there is no session comment on the node
+            if (node.SessionComments == null || node.SessionComments.Count == 0)
+                return;
+
+            node.UpdateTopTenComments();
+
+            // save seesion comments
+            this._mediator.CommentRepository.Add(node.SessionComments);
         }
     }
 }

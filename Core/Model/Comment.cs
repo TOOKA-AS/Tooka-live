@@ -11,7 +11,7 @@ namespace Live2k.Core.Model
 
         }
 
-        public Comment(Mediator mediator, Node node, string body)
+        private Comment(Mediator mediator, Node node, string body)
         {
             Id = Guid.NewGuid().ToString();
             Node = new NodeFootPrint(node);
@@ -20,6 +20,11 @@ namespace Live2k.Core.Model
 
             // Register comment on the node
             node.RegisterSessionComment(this);
+        }
+
+        public static Comment New(Mediator mediator, Node node, string body)
+        {
+            return new Comment(mediator, node, body);
         }
 
         /// <summary>

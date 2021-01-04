@@ -25,7 +25,7 @@ namespace Live2k.Core.Model.Base
 
         protected Node(Mediator mediator, bool isFromDb) : base(mediator, isFromDb)
         {
-            this._sessionComments = new List<Comment>();
+
         }
 
         /// <summary>
@@ -184,6 +184,7 @@ namespace Live2k.Core.Model.Base
             RelationshipsIn = new List<InRelationshipFootPrint>();
             TopTenHistory = new List<ChangeTrackerFoorPrint>();
             TopTenComments = new List<Comment>();
+            this._sessionComments = new List<Comment>();
         }
 
         /// <summary>
@@ -225,7 +226,13 @@ namespace Live2k.Core.Model.Base
         /// <summary>
         /// Comments added in the current session
         /// </summary>
-        public IReadOnlyCollection<Comment> SessionComments => this._sessionComments.ToList().AsReadOnly();
+        public IReadOnlyCollection<Comment> SessionComments
+        {
+            get
+            {
+                return new List<Comment>(this._sessionComments.Concat(GetSubNodes().SelectMany(a => a.SessionComments))).AsReadOnly();
+            }
+        }
 
         /// <summary>
         /// Add new outwards relationships
@@ -340,6 +347,21 @@ namespace Live2k.Core.Model.Base
                 topTenComments_copy.Add(comment);
             }
             TopTenComments = topTenComments_copy.AsReadOnly();
+
+            // Update top ten comments for subnodes
+            UpdateTopTenCommentsForSubnodes();
+        }
+
+        /// <summary>
+        /// Runs UpdateTopTenComments method on subnodes
+        /// </summary>
+        private void UpdateTopTenCommentsForSubnodes()
+        {
+            var subnodes = GetSubNodes();
+            foreach (var node in subnodes)
+            {
+                node.UpdateTopTenComments();
+            }
         }
 
         public override void Save()

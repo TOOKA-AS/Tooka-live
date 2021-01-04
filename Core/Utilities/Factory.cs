@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Live2k.Core.Model;
 using Live2k.Core.Model.Base;
 using Live2k.Core.Model.Basic.Commodities;
 
@@ -7,11 +8,11 @@ namespace Live2k.Core.Utilities
 {
     public class Factory
     {
-        private readonly Mediator mediator;
+        private readonly Mediator _mediator;
 
         public Factory(Mediator mediator)
         {
-            this.mediator = mediator;
+            this._mediator = mediator;
         }
 
         public T CreateNew<T>(string label, string description, params Tuple<string, object>[] properties) where T: Entity
@@ -47,7 +48,7 @@ namespace Live2k.Core.Utilities
             // Get constructor accepting mediator
             var constructor = GetConstructor(typeof(T)) ??
                 throw new TypeAccessException($"Could not find proper constructor for {typeof(T)}");
-            var instance = constructor.Invoke(new object[] { this.mediator }) ?? 
+            var instance = constructor.Invoke(new object[] { this._mediator }) ?? 
                 throw new OperationCanceledException($"Could not instanciate {typeof(T)}");
             return instance as T;
         }
@@ -59,5 +60,6 @@ namespace Live2k.Core.Utilities
                 new Type[] { typeof(Mediator) },
                 null);
         }
+
     }
 }
