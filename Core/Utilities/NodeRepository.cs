@@ -132,11 +132,14 @@ namespace Live2k.Core.Utilities
             // validate entity
             ValidateEntity(node);
 
-            // Record history
-            RecordHistory(node);
-
             // Recored comments
             RecoredComments(node);
+
+            // Record attachments
+            RecordAttachments(node);
+
+            // Record history
+            RecordHistory(node);
 
             Collection.InsertOne(node);
             NewNodeAdded?.Invoke(this, node);
@@ -148,10 +151,14 @@ namespace Live2k.Core.Utilities
         /// <param name="node"></param>
         public void Update(Node node)
         {
-            RecordHistory(node);
-
             // Recored comments
             RecoredComments(node);
+
+            // Record attachments
+            RecordAttachments(node);
+
+            // Record history
+            RecordHistory(node);
 
             Collection.FindOneAndReplace(a => a.Label == node.Label, node);
         }
@@ -233,6 +240,19 @@ namespace Live2k.Core.Utilities
 
             // save seesion comments
             this._mediator.CommentRepository.Add(node.SessionComments);
+        }
+
+
+        private void RecordAttachments(Node node)
+        {
+            // If there is no session comment on the node
+            if (node.SessionAttachments == null || node.SessionAttachments.Count == 0)
+                return;
+
+            node.UpdateTopTenAttachments();
+
+            // save seesion comments
+            this._mediator.AttachmentRepository.Add(node.SessionAttachments);
         }
     }
 }

@@ -17,6 +17,7 @@ namespace Live2k.Core.Model.Base
     {
         private bool _isTracked = false;
         private ICollection<Comment> _sessionComments;
+        private ICollection<Attachment> _sessionAttachments;
 
         protected Node(Mediator mediator) : base(mediator)
         {
@@ -114,12 +115,14 @@ namespace Live2k.Core.Model.Base
         {
             if (ChangeTracker.IsChanged)
             {
-                if (TopTenHistory.Count() == 10)
+                var topten_copy = new List<ChangeTrackerFoorPrint>(TopTenHistory);
+                if (topten_copy.Count() == 10)
                 {
-                    var first = TopTenHistory.First();
-                    TopTenHistory.Remove(first);
+                    var first = topten_copy.First();
+                    topten_copy.Remove(first);
                 }
-                TopTenHistory.Add(new ChangeTrackerFoorPrint(ChangeTracker));
+                topten_copy.Add(new ChangeTrackerFoorPrint(ChangeTracker));
+                TopTenHistory = topten_copy.AsReadOnly();
             }
 
             if (ChangeTracker.HasMainPropertyChange)
@@ -184,7 +187,9 @@ namespace Live2k.Core.Model.Base
             RelationshipsIn = new List<InRelationshipFootPrint>();
             TopTenHistory = new List<ChangeTrackerFoorPrint>();
             TopTenComments = new List<Comment>();
+            TopTenAttachments = new List<Attachment>();
             this._sessionComments = new List<Comment>();
+            this._sessionAttachments = new List<Attachment>();
         }
 
         /// <summary>
@@ -216,12 +221,17 @@ namespace Live2k.Core.Model.Base
         /// <summary>
         /// List of ten most recent changes
         /// </summary>
-        public ICollection<ChangeTrackerFoorPrint> TopTenHistory { get; set; }
+        public IReadOnlyCollection<ChangeTrackerFoorPrint> TopTenHistory { get; set; }
 
         /// <summary>
         /// List of ten most recent comments
         /// </summary>
-        public ICollection<Comment> TopTenComments { get; set; }
+        public IReadOnlyCollection<Comment> TopTenComments { get; set; }
+
+        /// <summary>
+        /// List of ten most recent attachments
+        /// </summary>
+        public IReadOnlyCollection<Attachment> TopTenAttachments { get; set; }
 
         /// <summary>
         /// Comments added in the current session
@@ -231,6 +241,17 @@ namespace Live2k.Core.Model.Base
             get
             {
                 return new List<Comment>(this._sessionComments.Concat(GetSubNodes().SelectMany(a => a.SessionComments))).AsReadOnly();
+            }
+        }
+
+        /// <summary>
+        /// List of attachments added in the current session
+        /// </summary>
+        public IReadOnlyCollection<Attachment> SessionAttachments
+        {
+            get
+            {
+                return new List<Attachment>(this._sessionAttachments.Concat(GetSubNodes().SelectMany(a => a.SessionAttachments))).AsReadOnly();
             }
         }
 
@@ -336,7 +357,7 @@ namespace Live2k.Core.Model.Base
         /// </summary>
         internal void UpdateTopTenComments()
         {
-            var topTenComments_copy = new List<Comment>(TopTenComments);
+            var topTenComments_copy = new List<Comment>(TopTenComments ?? new Comment[0]);
             foreach (var comment in this._sessionComments)
             {
                 if (topTenComments_copy.Count() == 10)
@@ -361,6 +382,65 @@ namespace Live2k.Core.Model.Base
             foreach (var node in subnodes)
             {
                 node.UpdateTopTenComments();
+            }
+        }
+
+        /// <summary>
+        /// Register session comment
+        /// </summary>
+        /// <param name="attachment"></param>
+        internal void RegisterSessionAttachment(Attachment attachment)
+        {
+            this._sessionAttachments.Add(attachment);
+            FireEntityChangedEventHandelr(
+                new Events.EntityChangeEventArgument("Attachments", false,
+                Events.EntityListPropertyChangeTypeEnum.Add,
+                attachment));
+        }
+
+        /// <summary>
+        /// Remove comment from session comments
+        /// </summary>
+        /// <param name="attachment"></param>
+        internal void RemoveSessionAttachment(Attachment attachment)
+        {
+            this._sessionAttachments.Remove(attachment);
+            FireEntityChangedEventHandelr(
+                new Events.EntityChangeEventArgument("Attachments", false,
+                Events.EntityListPropertyChangeTypeEnum.Remove,
+                attachment));
+        }
+
+        /// <summary>
+        /// Adds session comments into TopTenComments
+        /// </summary>
+        internal void UpdateTopTenAttachments()
+        {
+            var topTenAttachment_copy = new List<Attachment>(TopTenAttachments ?? new Attachment[0]);
+            foreach (var attachment in this._sessionAttachments)
+            {
+                if (topTenAttachment_copy.Count() == 10)
+                {
+                    var first = topTenAttachment_copy.First();
+                    topTenAttachment_copy.Remove(first);
+                }
+                topTenAttachment_copy.Add(attachment);
+            }
+            TopTenAttachments = topTenAttachment_copy.AsReadOnly();
+
+            // Update top ten comments for subnodes
+            UpdateTopTenAttachmentsForSubnodes();
+        }
+
+        /// <summary>
+        /// Runs UpdateTopTenComments method on subnodes
+        /// </summary>
+        private void UpdateTopTenAttachmentsForSubnodes()
+        {
+            var subnodes = GetSubNodes();
+            foreach (var node in subnodes)
+            {
+                node.UpdateTopTenAttachments();
             }
         }
 

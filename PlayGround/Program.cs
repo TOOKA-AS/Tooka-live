@@ -32,7 +32,7 @@ namespace PlayGround
         private static void TestNodeRepoeitory()
         {
             // Add a new node
-            NewNode();
+            //NewNode();
 
             // Get a sdi
             var node = GetNode();
@@ -42,8 +42,13 @@ namespace PlayGround
 
             Comment.New(_mediator, sdi, "This is new comment");
             Comment.New(_mediator, rev, "This is another comment");
+            Attachment.New(_mediator, node, "firt attachment", "pdf", new byte[] { 1, 2, 2 });
+            Attachment.New(_mediator, node, "second attachment", "pdf", new byte[] { 1, 2, 2 });
+            Attachment.New(_mediator, node, "third attachment", "pdf", new byte[] { 1, 2, 2 });
+            Attachment.New(_mediator, sdi, "firt attachment", "pdf", new byte[] { 1, 2, 2 });
 
             sdi.Save();
+            node.Save();
         }
 
         private static Node GetNode()
