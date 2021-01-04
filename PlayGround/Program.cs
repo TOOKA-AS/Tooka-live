@@ -61,6 +61,9 @@ namespace PlayGround
                 new Tuple<string, object>("Section", "3333"));
             sdi.Save();
 
+            var comodity = Node.NewNode<Commodity>(_mediator, "Onthefly", "this is a commodity");
+            comodity.Save();
+
             var co = Node.NewNode<ControlObject>(_mediator, "=122453/2132", "ssss");
             co.Save();
         }

@@ -51,8 +51,8 @@ namespace Live2k.Core.Model.Base
         /// </summary>
         protected virtual void GenerateLabel()
         {
-            Label = string.Format("{0}-{1}",
-                string.IsNullOrWhiteSpace(Label) ? GetType().Name : Label,
+            Label = string.IsNullOrWhiteSpace(Label) ? GetType().Name :
+                string.Format("{0}-{1}",Label,
                 mediator.CounterReposity.Count(GetType()) + 1);
         }
 
