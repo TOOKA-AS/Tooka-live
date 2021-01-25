@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.808.2
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{D71C066C-1946-4FFC-8E78-4BAB4B02DFCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{D71C066C-1946-4FFC-8E78-4BAB4B02DFCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayGround", "PlayGround\PlayGround.csproj", "{526EA4A2-AB76-40F8-9A1D-9242CC318B66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayGround", "PlayGround\PlayGround.csproj", "{526EA4A2-AB76-40F8-9A1D-9242CC318B66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeEngine", "CodeEngine\CodeEngine.csproj", "{79CBC81E-467C-4BCF-A6D8-65DDF06F41E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{526EA4A2-AB76-40F8-9A1D-9242CC318B66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{526EA4A2-AB76-40F8-9A1D-9242CC318B66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{526EA4A2-AB76-40F8-9A1D-9242CC318B66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79CBC81E-467C-4BCF-A6D8-65DDF06F41E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79CBC81E-467C-4BCF-A6D8-65DDF06F41E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79CBC81E-467C-4BCF-A6D8-65DDF06F41E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79CBC81E-467C-4BCF-A6D8-65DDF06F41E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

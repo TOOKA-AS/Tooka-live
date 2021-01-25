@@ -74,6 +74,11 @@ namespace PlayGround
 
             var co = Node.NewNode<ControlObject>(_mediator, "=122453/2132", "ssss");
             co.Save();
+
+            var rel = new DependencyRelationship();
+            rel.SetNodes(co, comodity);
+            rel.Save();
+
         }
 
         private static void LoginOrRegister()

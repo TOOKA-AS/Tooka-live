@@ -27,7 +27,7 @@ namespace Live2k.Core.Model.Base
 
         public override void Save()
         {
-            throw new NotImplementedException();
+            
         }
 
         public NodeFootPrint Origin { get; private set; }
